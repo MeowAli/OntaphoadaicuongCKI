@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="vi" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn Tập Hóa Đại Cương HCMUT - ThS. Nguyễn Quốc Vương</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        chem: {
+                            50: '#f0f7ff',
+                            100: '#e0effe',
+                            500: '#0284c7',
+                            600: '#0369a1',
+                            700: '#075985',
+                            800: '#0c4a6e',
+                            900: '#0a3651',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        sub, sup { font-size: 75%; line-height: 0; position: relative; vertical-align: baseline; }
+        sub { bottom: -0.25em; }
+        sup { top: -0.5em; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="h-full flex flex-col text-slate-800 antialiased select-none">
+
+    <!-- Top Navigation Header -->
+    <header class="bg-gradient-to-r from-slate-900 via-chem-900 to-slate-900 text-white shadow-md z-30 sticky top-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <!-- Brand / Title -->
+            <div class="flex items-center space-x-3">
+                <button id="mobile-menu-btn" class="lg:hidden p-2 rounded-lg text-slate-300 hover:text-white hover:bg-slate-800 focus:outline-none">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div class="flex items-center space-x-2">
+                    <div class="w-10 h-10 rounded-xl bg-chem-500 flex items-center justify-center text-white shadow-lg shadow-chem-500/30">
+                        <i class="fa-solid fa-flask-vial text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-base sm:text-lg leading-tight tracking-tight">HÓA ĐẠI CƯƠNG HCMUT</h1>
+                        <p class="text-xs text-chem-100 opacity-90 hidden sm:block">GV: ThS. Nguyễn Quốc Vương • 184 Câu Trắc Nghiệm Chuẩn</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mode Switch & Controls -->
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Mode Selector -->
+                <div class="bg-slate-800/80 p-1 rounded-xl flex items-center border border-slate-700">
+                    <button id="btn-mode-practice" class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center space-x-1.5 bg-chem-500 text-white shadow">
+                        <i class="fa-solid fa-book-open"></i>
+                        <span class="hidden sm:inline">Luyện từng câu</span>
+                    </button>
+                    <button id="btn-mode-exam" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center space-x-1.5">
+                        <i class="fa-solid fa-clock font-normal"></i>
+                        <span class="hidden sm:inline">Thi thử / Cả đề</span>
+                    </button>
+                </div>
+
+                <!-- Timer display (Exam Mode) -->
+                <div id="timer-box" class="hidden bg-rose-500/20 border border-rose-500/40 text-rose-300 px-3 py-1.5 rounded-xl text-xs font-mono font-bold flex items-center space-x-1.5">
+                    <i class="fa-solid fa-stopwatch animate-pulse"></i>
+                    <span id="timer-text">00:00:00</span>
+                </div>
+
+                <!-- Action Options -->
+                <button id="btn-open-settings" class="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-slate-800 transition" title="Tùy chọn đề & Bộ lọc">
+                    <i class="fa-solid fa-sliders text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="flex-1 flex overflow-hidden max-w-7xl w-full mx-auto px-2 sm:px-4 lg:px-8 py-4 gap-4">
+
+        <!-- Question Palette Sidebar (Desktop & Mobile Drawer) -->
+        <aside id="palette-sidebar" class="fixed inset-y-0 left-0 z-40 w-80 bg-white border-r border-slate-200 transform -translate-x-full lg:translate-x-0 lg:static lg:w-72 lg:border-none lg:rounded-2xl lg:shadow-sm flex flex-col transition-transform duration-300 ease-in-out">
+            <!-- Sidebar Header -->
+            <div class="p-4 border-b border-slate-100 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-grid-2 text-chem-600"></i>
+                    <h2 class="font-bold text-slate-800 text-sm">Bảng Điều Hướng Câu Hỏi</h2>
+                </div>
+                <button id="close-sidebar-btn" class="lg:hidden text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Filter / Search in Sidebar -->
+            <div class="p-3 bg-slate-50/70 border-b border-slate-100 space-y-2">
+                <!-- Search Box -->
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                    <input type="text" id="search-input" placeholder="Tìm mã câu (VD: 8.25) hoặc từ khóa..." class="w-full pl-8 pr-3 py-1.5 bg-white border border-slate-200 rounded-xl text-xs focus:outline-none focus:border-chem-500 focus:ring-1 focus:ring-chem-500">
+                </div>
+
+                <!-- Category Filter -->
+                <select id="category-filter" class="w-full py-1.5 px-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-700 font-medium focus:outline-none focus:border-chem-500">
+                    <option value="ALL">Tất cả 184 câu (Toàn bộ chương)</option>
+                    <option value="CH6">Chương VI: Nhiệt hóa học (34 câu)</option>
+                    <option value="CH7">Chương VII: Gibbs ΔG (28 câu)</option>
+                    <option value="CH8">Chương VIII: Cân bằng hóa (43 câu)</option>
+                    <option value="CH10">Chương X: Động hóa học (28 câu)</option>
+                    <option value="CH11">Chương XI: Dung dịch lỏng (33 câu)</option>
+                    <option value="CH12">Chương XII: Dung dịch điện ly (18 câu)</option>
+                    <option value="WRONG">🔴 Ôn lại các câu sai</option>
+                    <option value="FLAGGED">⭐ Các câu đã gắn cờ</option>
+                </select>
+            </div>
+
+            <!-- Stats Progress -->
+            <div class="px-4 py-2 bg-white border-b border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                <span>Tiến độ: <strong id="stat-completed" class="text-slate-800">0/184</strong></span>
+                <span>Đúng: <strong id="stat-correct" class="text-emerald-600">0</strong> | Sai: <strong id="stat-wrong" class="text-rose-600">0</strong></span>
+            </div>
+
+            <!-- Palette Grid Container -->
+            <div class="flex-1 overflow-y-auto p-3 custom-scrollbar">
+                <div id="palette-grid" class="grid grid-cols-5 gap-2">
+                    <!-- Dynamic Question Buttons Inserted via JS -->
+                </div>
+            </div>
+
+            <!-- Legend Footer -->
+            <div class="p-3 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-500 grid grid-cols-2 gap-1.5">
+                <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-slate-200 inline-block"></span><span>Chưa làm</span></div>
+                <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-chem-500 inline-block"></span><span>Đã chọn</span></div>
+                <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-emerald-500 inline-block"></span><span>Trả lời đúng</span></div>
+                <div class="flex items-center space-x-1.5"><span class="w-3 h-3 rounded bg-rose-500 inline-block"></span><span>Trả lời sai</span></div>
+            </div>
+        </aside>
+
+        <!-- Overlay backdrop for mobile menu -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 hidden lg:hidden"></div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+
+            <!-- Sub Header Info -->
+            <div class="px-4 sm:px-6 py-3 bg-slate-50/80 border-b border-slate-200/80 flex items-center justify-between flex-wrap gap-2">
+                <div class="flex items-center space-x-2">
+                    <span id="badge-chapter" class="px-2.5 py-1 bg-chem-100 text-chem-800 text-xs font-semibold rounded-lg">
+                        Chương VI: Nhiệt hóa học
+                    </span>
+                    <span id="badge-question-code" class="px-2.5 py-1 bg-slate-200 text-slate-700 text-xs font-mono font-bold rounded-lg">
+                        Mã câu: 6.1
+                    </span>
+                </div>
+
+                <div class="flex items-center space-x-3">
+                    <!-- Auto-check toggle in Practice mode -->
+                    <label id="auto-check-container" class="flex items-center space-x-2 cursor-pointer text-xs font-medium text-slate-600">
+                        <input type="checkbox" id="chk-auto-check" checked class="sr-only peer">
+                        <div class="w-8 h-4 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-chem-600 relative"></div>
+                        <span>Tự động chấm</span>
+                    </label>
+
+                    <!-- Flag Button -->
+                    <button id="btn-toggle-flag" class="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-xs font-medium text-slate-600 flex items-center space-x-1.5 transition">
+                        <i class="fa-regular fa-bookmark text-amber-500" id="flag-icon"></i>
+                        <span id="flag-text">Gắn cờ</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question & Diagram Container -->
+            <div class="flex-1 overflow-y-auto p-4 sm:p-6 sm:px-8 custom-scrollbar flex flex-col justify-between">
+                <div>
+                    <!-- Question Text & SVGs -->
+                    <div class="mb-6">
+                        <div class="flex items-start space-x-3">
+                            <span id="question-num-tag" class="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-chem-50 text-chem-700 font-bold text-sm shrink-0 border border-chem-200">
+                                1
+                            </span>
+                            <div id="question-text" class="text-base sm:text-lg font-medium text-slate-800 leading-relaxed pt-0.5">
+                                Loading câu hỏi...
+                            </div>
+                        </div>
+
+                        <!-- SVG Diagram Container for Q7.1 -->
+                        <div id="diagram-box" class="mt-4 hidden p-4 bg-slate-50 border border-slate-200 rounded-2xl flex flex-col items-center">
+                            <div id="svg-content" class="w-full max-w-md"></div>
+                            <span class="text-xs text-slate-500 mt-2 italic">Giản đồ P-V minh họa 5 con đường biến đổi từ trạng thái A sang B</span>
+                        </div>
+                    </div>
+
+                    <!-- Options List -->
+                    <div id="options-container" class="space-y-3 mb-6">
+                        <!-- Dynamic options cards -->
+                    </div>
+
+                    <!-- Detailed Explanation Box (Practice Mode) -->
+                    <div id="explanation-box" class="hidden p-4 sm:p-5 rounded-2xl border transition-all duration-200">
+                        <div class="flex items-center space-x-2 font-bold text-sm mb-2" id="exp-header">
+                            <i id="exp-icon" class="fa-solid fa-lightbulb"></i>
+                            <span id="exp-title">Lời Giải Chi Tiết</span>
+                        </div>
+                        <div id="exp-content" class="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+                            <!-- Explanation content -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bottom Navigation Buttons -->
+                <div class="pt-6 border-t border-slate-100 flex items-center justify-between flex-wrap gap-3 mt-4">
+                    <button id="btn-prev" class="px-4 py-2.5 rounded-xl border border-slate-300 hover:bg-slate-50 text-sm font-semibold text-slate-700 transition flex items-center space-x-2">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Câu trước</span>
+                    </button>
+
+                    <div class="flex items-center space-x-3">
+                        <button id="btn-check-ans" class="px-5 py-2.5 rounded-xl bg-chem-600 hover:bg-chem-700 text-white text-sm font-semibold shadow-md shadow-chem-600/20 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Kiểm tra đáp án</span>
+                        </button>
+
+                        <button id="btn-submit-exam" class="hidden px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold shadow-md shadow-emerald-600/20 transition flex items-center space-x-2">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Nộp bài thi</span>
+                        </button>
+                    </div>
+
+                    <button id="btn-next" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-semibold transition flex items-center space-x-2">
+                        <span>Câu tiếp</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Footer Keyboard Shortcut Info -->
+            <div class="px-6 py-2 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-400 flex items-center justify-between hidden sm:flex">
+                <span>Phím tắt: <kbd class="px-1 bg-white border border-slate-200 rounded">A</kbd><kbd class="px-1 bg-white border border-slate-200 rounded ml-1">B</kbd><kbd class="px-1 bg-white border border-slate-200 rounded ml-1">C</kbd><kbd class="px-1 bg-white border border-slate-200 rounded ml-1">D</kbd> chọn đáp án | <kbd class="px-1 bg-white border border-slate-200 rounded">←</kbd><kbd class="px-1 bg-white border border-slate-200 rounded ml-1">→</kbd> chuyển câu | <kbd class="px-1 bg-white border border-slate-200 rounded">Enter</kbd> kiểm tra | <kbd class="px-1 bg-white border border-slate-200 rounded">F</kbd> gắn cờ</span>
+                <span>HCMUT Chemistry • ThS. Nguyễn Quốc Vương</span>
+            </div>
+        </main>
+    </div>
+
+    <!-- Exam Modal / Test Config Modal -->
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-5 animate-in fade-in zoom-in duration-200">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-800 flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-chem-600"></i>
+                    <span>Tùy Chỉnh Bộ Đề Thi / Luyện Tập</span>
+                </h3>
+                <button id="close-settings-btn" class="text-slate-400 hover:text-slate-600 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1.5">Số lượng câu hỏi tạo đề:</label>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button type="button" class="btn-count-opt px-3 py-2 rounded-xl border border-slate-200 font-semibold hover:border-chem-500 hover:bg-chem-50 focus:bg-chem-500 focus:text-white transition" data-count="20">20 câu</button>
+                        <button type="button" class="btn-count-opt px-3 py-2 rounded-xl border border-slate-200 font-semibold hover:border-chem-500 hover:bg-chem-50 focus:bg-chem-500 focus:text-white transition" data-count="40">40 câu</button>
+                        <button type="button" class="btn-count-opt px-3 py-2 rounded-xl border border-slate-200 font-semibold hover:border-chem-500 hover:bg-chem-50 focus:bg-chem-500 focus:text-white transition" data-count="60">60 câu</button>
+                        <button type="button" class="btn-count-opt px-3 py-2 rounded-xl border border-slate-200 font-semibold bg-chem-500 text-white transition" data-count="184">Tất cả</button>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="flex items-center space-x-2 cursor-pointer">
+                        <input type="checkbox" id="chk-shuffle" class="rounded border-slate-300 text-chem-600 focus:ring-chem-500">
+                        <span class="text-slate-700 font-medium">Xáo trộn thứ tự câu hỏi & đáp án</span>
+                    </label>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-xl flex items-start space-x-2">
+                    <i class="fa-solid fa-circle-info text-amber-600 mt-0.5"></i>
+                    <p class="leading-relaxed">Trong chế độ <strong>Thi thử</strong>, hệ thống sẽ giới hạn thời gian (1.5 phút/câu) và ẩn lời giải cho đến khi bạn bấm <strong>Nộp bài</strong>.</p>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-3">
+                <button id="btn-reset-progress" class="px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-xl font-semibold transition text-xs">
+                    Xóa lịch sử làm bài
+                </button>
+                <button id="btn-apply-settings" class="px-5 py-2 bg-chem-600 hover:bg-chem-700 text-white rounded-xl font-semibold transition text-xs shadow-md">
+                    Áp dụng & Bắt đầu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Modal (Exam Mode) -->
+    <div id="result-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-8 space-y-6 text-center animate-in zoom-in duration-300">
+            <div class="w-20 h-20 bg-chem-50 border-4 border-chem-100 text-chem-600 rounded-full flex items-center justify-center mx-auto text-3xl shadow-inner">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-extrabold text-slate-800">Kết Quả Bài Thi Thử</h3>
+                <p class="text-xs text-slate-500 mt-1">Hóa Đại Cương HCMUT • Chuẩn Cấu Trúc</p>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-4 grid grid-cols-3 gap-2 border border-slate-100">
+                <div>
+                    <span class="block text-xs text-slate-500">Điểm số</span>
+                    <strong id="res-score" class="text-2xl font-black text-chem-600">8.5 / 10</strong>
+                </div>
+                <div>
+                    <span class="block text-xs text-slate-500">Số câu đúng</span>
+                    <strong id="res-correct" class="text-xl font-bold text-emerald-600">34 / 40</strong>
+                </div>
+                <div>
+                    <span class="block text-xs text-slate-500">Thời gian</span>
+                    <strong id="res-time" class="text-xl font-bold text-slate-700">25:10</strong>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center space-x-3">
+                <button id="btn-review-exam" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+                    <i class="fa-solid fa-eye mr-1.5"></i>Xem lại đáp án
+                </button>
+                <button id="btn-retry-exam" class="px-6 py-2.5 bg-chem-600 hover:bg-chem-700 text-white font-bold rounded-xl text-xs shadow-md transition">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i>Thi lại lần nữa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+    // COMPLETE 184 QUESTIONS DATA ARRAY
+    // Format: [id, chapter, question_text, [optA, optB, optC, optD], ansIndex (0:A, 1:B, 2:C, 3:D), explanation]
+    const QUESTIONS = [
+        // ==================== CHƯƠNG VI: NHIỆT HÓA HỌC (34 CÂU) ====================
+        ["6.1", 6, "Chọn phương án đúng. Xét hệ phản ứng: NO(k) + ½O₂(k) → NO₂(k); ΔH°₂₉₈ = -7,4 kcal. Phản ứng được thực hiện trong bình kín có thể tích không đổi, sau phản ứng được đưa về nhiệt độ ban đầu. Hệ như thế là:", ["Hệ cô lập.", "Hệ kín và đồng thể.", "Hệ kín và dị thể.", "Hệ cô lập và đồng thể."], 1, "Bình kín ⇒ hệ không trao đổi chất. Sau phản ứng hệ được đưa về nhiệt độ ban đầu, tức hệ đã tỏa nhiệt ra môi trường (trao đổi năng lượng) ⇒ hệ kín, không phải cô lập. Các chất NO, O₂, NO₂ đều ở pha khí, không có bề mặt phân chia ⇒ hệ đồng thể."],
+        ["6.2", 6, "Chọn phương án sai:", ["Hệ đoạn nhiệt là hệ không trao đổi chất và nhiệt, song có thể trao đổi công với môi trường.", "Hệ hở là hệ không bị ràng buộc bởi hạn chế nào, có thể trao đổi chất và năng lượng với môi trường.", "Hệ cô lập là hệ không có trao đổi chất, không trao đổi năng lượng dưới dạng nhiệt và công với môi trường.", "Hệ kín là hệ không trao đổi chất và công, song có thể trao đổi nhiệt với môi trường."], 3, "Theo định nghĩa, hệ kín là hệ không trao đổi chất nhưng trao đổi năng lượng với môi trường, gồm cả nhiệt và công. Phương án D nói hệ kín \"không trao đổi công\" ⇒ sai."],
+        ["6.3", 6, "Chọn phát biểu sai:<br>1) Khí quyển là một hệ đồng thể và đồng nhất.<br>2) Dung dịch NaCl 0,1M là hệ đồng thể và đồng nhất.<br>3) Trộn hai chất lỏng benzen và nước tạo thành hệ dị thể.<br>4) Quá trình nung vôi: CaCO₃(r) → CaO(r) + CO₂(k) ở nhiệt độ cao, khí CO₂ theo ống khói bay ra ngoài là hệ hở.<br>5) Thực hiện phản ứng trung hòa: HCl(dd) + NaOH(dd) → NaCl(dd) + H₂O(l) trong nhiệt lượng kế (bình kín, cách nhiệt) là hệ cô lập.", ["2, 4.", "3, 5.", "1.", "Chỉ 4."], 2, "(1) Sai: khí quyển là hệ đồng thể (một pha khí) nhưng không đồng nhất vì áp suất, nồng độ thay đổi theo độ cao. (2), (3), (4), (5) đều đúng. Chỉ có phát biểu 1 sai."],
+        ["6.4", 6, "Chọn phương án sai. Các đại lượng dưới đây đều là hàm trạng thái:", ["Entanpi, nhiệt dung đẳng áp.", "Nhiệt độ, áp suất.", "Nhiệt, công.", "Nội năng, nhiệt dung đẳng tích."], 2, "Nhiệt Q và công A không phải là hàm trạng thái. Giá trị của chúng phụ thuộc vào đường đi của quá trình và chỉ xuất hiện khi hệ biến đổi trạng thái."],
+        ["6.5", 6, "Chọn trường hợp đúng. Đại lượng nào sau đây là hàm trạng thái có thuộc tính cường độ:", ["Nhiệt độ T.", "Công chống áp suất ngoài A.", "Nội năng U.", "Thể tích V."], 0, "Công A không phải hàm trạng thái (loại B). Nội năng U và thể tích V là hàm trạng thái có thuộc tính dung độ vì tỉ lệ với lượng chất (loại C, D). Nhiệt độ T là hàm trạng thái không phụ thuộc lượng chất ⇒ thuộc tính cường độ."],
+        ["6.6", 6, "Chọn phương án đúng. Sự biến thiên nội năng ΔU khi một hệ thống đi từ trạng thái thứ nhất (I) sang trạng thái thứ hai (II) bằng những đường đi khác nhau có tính chất sau:", ["Không thể tính được do không thể xác định giá trị tuyệt đối nội năng của hệ.", "Thay đổi do nhiệt Q và công A thay đổi theo đường đi.", "Không thể tính được do mỗi đường đi có Q và A khác nhau.", "Không thay đổi và bằng Q – A theo nguyên lý bảo toàn năng lượng."], 3, "U là hàm trạng thái, nên ΔU = U₂ - U₁ chỉ phụ thuộc trạng thái đầu và cuối, không phụ thuộc đường đi. Theo nguyên lý I: Q = ΔU + A ⇒ ΔU = Q - A không đổi theo đường đi."],
+        ["6.7", 6, "Chọn phương án đúng. Một hệ có nội năng giảm (ΔU < 0), khi đi từ trạng thái 1 sang trạng thái 2 trong điều kiện đẳng áp. Biết rằng trong quá trình biến đổi này hệ tỏa nhiệt (ΔH < 0), vậy hệ:", ["Sinh ra công.", "Nhận công.", "Không trao đổi công.", "Không dự đoán được dấu của công."], 3, "Trong điều kiện đẳng áp: ΔH = ΔU + PΔV ⇒ A = PΔV = ΔH - ΔU. Ta chỉ biết ΔH < 0 và ΔU < 0, không biết độ lớn nào lớn hơn nên không dự đoán được dấu của A."],
+        ["6.8", 6, "Chọn phương án đúng. Hệ thống hấp thu một nhiệt lượng bằng 300 kJ. Nội năng của hệ tăng thêm 250 kJ. Vậy trong biến đổi trên công của hệ thống có giá trị:", ["-50 kJ, hệ sinh công.", "50 kJ, hệ sinh công.", "-50 kJ, hệ nhận công.", "50 kJ, hệ nhận công."], 1, "Hệ hấp thu nhiệt nên Q = +300 kJ. Nội năng tăng nên ΔU = +250 kJ. Theo nguyên lý I: A = Q - ΔU = 300 - 250 = 50 kJ > 0 ⇒ hệ sinh công."],
+        ["6.9", 6, "Chọn phương án đúng. Trong một chu trình, công hệ nhận là 2 kcal. Tính nhiệt mà hệ trao đổi:", ["-2 kcal.", "+4 kcal.", "+2 kcal.", "0 kcal."], 0, "Trong một chu trình, hệ trở về trạng thái đầu nên ΔU = 0 ⇒ Q = A. Hệ nhận công nên A = -2 kcal ⇒ Q = -2 kcal (hệ tỏa nhiệt)."],
+        ["6.10", 6, "Chọn câu đúng:<br>1) Công thức tính công dãn nở A = ΔnRT đúng cho mọi hệ khí.<br>2) Trong trường hợp tổng quát, khi cung cấp cho hệ đẳng tích một lượng nhiệt Q thì toàn bộ lượng nhiệt Q sẽ chỉ làm tăng nội năng của hệ.<br>3) Trong trường hợp hệ không thực hiện bất kỳ công nào khác ngoại trừ công chống áp suất ngoài, biến thiên entanpi của phản ứng hóa học chính là hiệu ứng nhiệt của phản ứng đó trong điều kiện đẳng áp.", ["Không có câu đúng.", "Chỉ 2 và 3 đúng.", "Tất cả đều đúng.", "Chỉ 3 đúng."], 3, "(1) Sai: A = ΔnRT chỉ đúng khi đẳng áp, đẳng nhiệt và khí lý tưởng. (2) Sai: Q_V = ΔU chỉ đúng khi hệ không thực hiện công có ích (như công điện). (3) Đúng: khi đó Q_p = ΔU + PΔV = ΔH."],
+        ["6.11", 6, "Tính công dãn nở của quá trình dãn nở thuận nghịch 5 mol khí lý tưởng ở nhiệt độ không đổi T = 298 K từ áp suất 10 atm đến 1 atm.", ["28,5 kJ.", "281 kJ.", "6,82 kJ.", "5,70 kJ."], 0, "Quá trình đẳng nhiệt khí lý tưởng: A = nRT·ln(P₁/P₂) = 5 × 8,314 × 298 × ln(10/1) ≈ 28524 J ≈ 28,5 kJ."],
+        ["6.12", 6, "Chọn phương án đúng. Trong điều kiện đẳng tích, phản ứng phát nhiệt là phản ứng có:", ["A < 0", "ΔU > 0", "ΔH > 0", "ΔU < 0"], 3, "Trong điều kiện đẳng tích, ΔV = 0 nên A = 0 và Q_V = ΔU. Phản ứng phát nhiệt khi Q_V < 0, tức ΔU < 0."],
+        ["6.13", 6, "Chọn phương án đúng. Trong điều kiện đẳng áp, ở một nhiệt độ xác định và các khí xem như là khí lý tưởng, phản ứng: A(r) + 2B(k) = C(k) + 2D(k) phát nhiệt và không sinh công có ích. Vậy:", ["|ΔU| < |ΔH|", "|ΔU| = |ΔH|", "|ΔU| > |ΔH|", "Chưa đủ dữ liệu để so sánh."], 2, "Chỉ tính số mol khí: Δn = (1+2) - 2 = 1. Ta có ΔH = ΔU + ΔnRT = ΔU + RT ⇒ ΔU = ΔH - RT. Phản ứng phát nhiệt nên ΔH < 0 ⇒ ΔU còn âm hơn ΔH ⇒ |ΔU| > |ΔH|."],
+        ["6.14", 6, "Chọn phương án đúng. Tính sự chênh lệch giữa hiệu ứng nhiệt đẳng áp và đẳng tích của phản ứng sau đây ở 25°C (các khí được xem là lý tưởng, quá trình không sinh công có ích): C₂H₅OH(l) + 3O₂(k) = 2CO₂(k) + 3H₂O(l) (R = 8,314 J/mol.K)", ["4539 J", "2478 J", "2270 J", "1085 J"], 1, "Chỉ tính số mol khí: Δn = 2 - 3 = -1. Q_p - Q_V = ΔnRT = (-1) × 8,314 × 298 ≈ -2478 J. Chênh lệch về độ lớn là 2478 J."],
+        ["6.15", 6, "Chọn phương án đúng. ΔH°₂₉₈ của một phản ứng hóa học:", ["Tùy thuộc vào nhiệt độ lúc diễn ra phản ứng.", "Tùy thuộc vào đường đi từ chất đầu đến sản phẩm.", "Tùy thuộc vào cách viết các hệ số tỷ lượng của phương trình phản ứng.", "Không phụ thuộc vào bản chất và trạng thái của các chất đầu và sản phẩm phản ứng."], 2, "A sai (298 K cố định); B sai (định luật Hess); D sai (phụ thuộc bản chất và trạng thái). C đúng: hiệu ứng nhiệt tỉ lệ với lượng chất, nhân đôi hệ số thì ΔH°₂₉₈ nhân đôi."],
+        ["6.16", 6, "Chọn phương án đúng. Hiệu ứng nhiệt tạo thành tiêu chuẩn của khí CO₂ là biến thiên entanpi của phản ứng:", ["C(graphit) + O₂(k) = CO₂(k) ở 25°C, áp suất riêng phần của O₂ và CO₂ đều bằng 1 atm.", "C(kim cương) + O₂(k) = CO₂(k) ở 0°C, áp suất riêng phần của O₂ và CO₂ đều bằng 1 atm.", "C(graphit) + O₂(k) = CO₂(k) ở 0°C, áp suất chung bằng 1 atm.", "C(graphit) + O₂(k) = CO₂(k) ở 25°C, áp suất chung bằng 1 atm."], 0, "Nhiệt tạo thành tiêu chuẩn của CO₂ xác định khi tạo 1 mol CO₂ từ đơn chất bền nhất là C(graphit) và O₂(k), ở 25°C (298 K), áp suất riêng phần mỗi khí bằng 1 atm."],
+        ["6.17", 6, "Lượng nhiệt tỏa ra khi đốt cháy 3 g kim loại Mg bằng O₂(k) tạo thành MgO(r) ở 25°C là 76 kJ. Nhiệt tạo thành tiêu chuẩn (kJ/mol) ở cùng nhiệt độ của MgO(r) là: (M_Mg = 24 g/mol).", ["+608", "-608", "+304", "-304"], 1, "Mg(r) + ½O₂(k) → MgO(r). n_Mg = 3/24 = 0,125 mol = n_MgO. Tỏa nhiệt mang dấu âm: ΔH°tt(MgO) = -76 / 0,125 = -608 kJ/mol."],
+        ["6.19", 6, "Chọn trường hợp đúng. Biết rằng nhiệt tạo thành tiêu chuẩn của B₂O₃(r), H₂O(l), CH₄(k) và C₂H₂(k) lần lượt bằng: -1273,5; -285,8; -74,7; +2,28 (kJ/mol). Trong 4 chất này, chất dễ bị phân hủy thành đơn chất nhất là:", ["H₂O.", "CH₄.", "B₂O₃.", "C₂H₂."], 3, "Phản ứng phân hủy là nghịch của phản ứng tạo thành nên ΔH_ph = -ΔH_tt. C₂H₂ có ΔH_tt > 0 nên phân hủy tỏa nhiệt (ΔH_ph < 0), kém bền nhất và dễ phân hủy nhất."],
+        ["6.20", 6, "Chọn trường hợp đúng. Trong các hiệu ứng nhiệt (ΔH) của các phản ứng cho dưới đây, giá trị nào là hiệu ứng nhiệt đốt cháy?<br>1) C(gr) + ½O₂(k) = CO(k); ΔH°₂₉₈ = -110,55 kJ<br>2) H₂(k) + ½O₂(k) = H₂O(k); ΔH°₂₉₈ = -237,84 kJ<br>3) C(gr) + O₂(k) = CO₂(k); ΔH°₂₉₈ = -393,50 kJ", ["Chỉ 3.", "1, 3.", "1, 2.", "2, 3."], 0, "Nhiệt đốt cháy là hiệu ứng nhiệt đốt cháy 1 mol chất bằng oxy tạo thành oxit cao, bền. (1) CO chưa phải oxit cao nhất; (2) ở 25°C dạng bền của nước là lỏng, không phải hơi; (3) CO₂(k) là oxit cao, bền của C ⇒ Chỉ 3 đúng."],
+        ["6.21", 6, "Chọn câu sai.", ["Nhiệt tạo thành của các hợp chất hữu cơ trong cùng một dãy đồng đẳng có trị số tuyệt đối tăng khi khối lượng phân tử của hợp chất tăng lên.", "Nhiệt đốt cháy của các hợp chất hữu cơ trong cùng một dãy đồng đẳng có trị số tuyệt đối giảm khi khối lượng phân tử của hợp chất tăng lên.", "Nhiệt thăng hoa của một chất thường lớn hơn nhiều so với nhiệt nóng chảy của chất đó.", "Nhiệt hòa tan của một chất không những phụ thuộc vào bản chất của dung môi và chất tan mà còn phụ thuộc vào lượng dung môi."], 1, "Trong một dãy đồng đẳng, khối lượng phân tử càng lớn thì càng nhiều nguyên tử C và H, khi đốt tạo nhiều CO₂ và H₂O hơn nên tỏa nhiều nhiệt hơn ⇒ |ΔH_đc| tăng khi khối lượng phân tử tăng ⇒ B sai."],
+        ["6.22", 6, "Chọn đáp án không chính xác. Ở một nhiệt độ xác định:<br>1) Nhiệt tạo thành tiêu chuẩn của mọi đơn chất luôn bằng 0.<br>2) Nhiệt cháy tiêu chuẩn của một chất là một đại lượng không đổi.<br>3) Nhiệt hòa tan tiêu chuẩn của một chất là một đại lượng không đổi vì không phụ thuộc vào lượng dung môi.<br>4) Nhiệt chuyển pha tiêu chuẩn của một chất là một đại lượng không đổi.", ["1, 2, 4.", "1, 3, 4.", "Chỉ 1, 3.", "2, 3."], 2, "(1) Sai: chỉ đơn chất ở dạng bền nhất mới có ΔH_tt = 0 (vd C kim cương ≠ 0). (3) Sai: nhiệt hòa tan phụ thuộc lượng dung môi. (2), (4) đúng."],
+        ["6.23", 6, "Chọn giá trị đúng. Ở điều kiện tiêu chuẩn, khi đốt cháy than chì bằng oxy, cứ mỗi 33 g khí cacbonic thu được thì lượng nhiệt tỏa ra là 70,9 kcal. Vậy nhiệt tạo thành tiêu chuẩn của khí cacbonic ở cùng điều kiện nhiệt độ có giá trị (kcal/mol):", ["-70,9", "94,5", "-94,5", "68,6"], 2, "Phản ứng C(gr) + O₂(k) → CO₂(k) chính là phản ứng tạo thành CO₂. n_CO₂ = 33/44 = 0,75 mol. ΔH°tt(CO₂) = -70,9 / 0,75 ≈ -94,5 kcal/mol."],
+        ["6.24", 6, "Chọn phương án đúng. Cho phản ứng: N₂(k) + O₂(k) = 2NO(k) có ΔH°₂₉₈ = +180,8 kJ. Ở điều kiện tiêu chuẩn, 25°C, khi thu được 1 mol khí NO từ phản ứng trên thì:", ["Lượng nhiệt thu vào là 180,8 kJ.", "Lượng nhiệt tỏa ra là 90,4 kJ.", "Lượng nhiệt thu vào là 90,4 kJ.", "Lượng nhiệt tỏa ra là 180,8 kJ."], 2, "Tạo 2 mol NO phản ứng thu 180,8 kJ (ΔH > 0). Vì hiệu ứng nhiệt tỉ lệ với lượng chất nên tạo 1 mol NO thu vào 180,8 / 2 = 90,4 kJ."],
+        ["6.25", 6, "Chọn phương án chính xác. Một phản ứng có ΔH = +200 kJ. Dựa trên thông tin này có thể kết luận phản ứng tại điều kiện đang xét:<br>1) Thu nhiệt.<br>2) Xảy ra nhanh.<br>3) Không tự xảy ra được.", ["Chỉ 2, 3.", "Chỉ 1.", "1, 2, 3.", "Chỉ 1, 3."], 1, "(1) Đúng vì ΔH > 0 là thu nhiệt. (2) Không kết luận được vì tốc độ thuộc động hóa học. (3) Không kết luận được vì chiều tự diễn biến xét bằng ΔG = ΔH - TΔS."],
+        ["6.26", 6, "Chọn phát biểu chính xác và đầy đủ của định luật Hess:", ["Hiệu ứng nhiệt đẳng áp hay đẳng tích của quá trình hóa học chỉ phụ thuộc vào bản chất và trạng thái của các chất đầu và sản phẩm chứ không phụ thuộc vào đường đi của quá trình.", "Hiệu ứng nhiệt của quá trình hóa học chỉ phụ thuộc vào bản chất và trạng thái của các chất đầu và sản phẩm chứ không phụ thuộc vào đường đi của quá trình.", "Hiệu ứng nhiệt đẳng áp hay đẳng tích của quá trình hóa học chỉ phụ thuộc vào bản chất của các chất đầu và sản phẩm chứ không phụ thuộc vào đường đi của quá trình.", "Hiệu ứng nhiệt đẳng áp của quá trình hóa học chỉ phụ thuộc vào bản chất và trạng thái của các chất đầu và sản phẩm chứ không phụ thuộc vào đường đi của quá trình."], 0, "Định luật Hess: hiệu ứng nhiệt ở điều kiện đẳng áp hay đẳng tích chỉ phụ thuộc vào bản chất và trạng thái của các chất đầu và sản phẩm cuối, không phụ thuộc đường đi. B thiếu đẳng áp/đẳng tích; C thiếu \"trạng thái\"; D thiếu \"đẳng tích\"."],
+        ["6.27", 6, "Chọn phương án đúng. ΔH của một quá trình hóa học khi hệ chuyển từ trạng thái thứ nhất (I) sang trạng thái thứ hai (II) bằng những cách khác nhau có đặc điểm:", ["Có thể cho ta biết mức độ diễn ra của quá trình.", "Không đổi theo cách tiến hành quá trình.", "Có thể cho ta biết chiều tự diễn biến của quá trình ở nhiệt độ cao.", "Có thể cho ta biết độ hỗn loạn của quá trình."], 1, "H là hàm trạng thái nên ΔH = H_II - H_I chỉ phụ thuộc trạng thái đầu và cuối, không đổi theo cách tiến hành quá trình."],
+        ["6.28", 6, "Chọn phương án đúng. Tính hiệu ứng nhiệt ΔH₀ của phản ứng: B → A, biết hiệu ứng nhiệt của các phản ứng sau:<br>C → A (ΔH₁); D → C (ΔH₂); D → B (ΔH₃).", ["ΔH₀ = ΔH₃ + ΔH₂ - ΔH₁.", "ΔH₀ = ΔH₁ + ΔH₂ + ΔH₃.", "ΔH₀ = ΔH₁ + ΔH₂ - ΔH₃.", "ΔH₀ = ΔH₁ - ΔH₂ - ΔH₃."], 2, "Đi từ B → D (-ΔH₃) → C (+ΔH₂) → A (+ΔH₁). Theo định luật Hess: ΔH₀ = -ΔH₃ + ΔH₂ + ΔH₁ = ΔH₁ + ΔH₂ - ΔH₃."],
+        ["6.29", 6, "Chọn giá trị đúng. Từ các giá trị ΔH ở cùng điều kiện:<br>(1) 2SO₂(k) + O₂(k) = 2SO₃(k); ΔH₁ = -196 kJ<br>(2) 2S(r) + 3O₂(k) = 2SO₃(k); ΔH₂ = -790 kJ<br>Tính ΔH ở cùng điều kiện của: S(r) + O₂(k) = SO₂(k)", ["ΔH = -297 kJ.", "ΔH = -594 kJ.", "ΔH = 594 kJ.", "ΔH = 297 kJ."], 0, "Lấy (2) - (1) được 2S(r) + 2O₂(k) = 2SO₂(k) có ΔH₂ - ΔH₁. Chia đôi: ΔH = (-790 - (-196)) / 2 = -297 kJ."],
+        ["6.30", 6, "Từ hai phản ứng: (1) A + B = C + D (ΔH₁); (2) E + F = C + D (ΔH₂). Thiết lập công thức tính ΔH₃ ở cùng điều kiện của phản ứng: A + B = E + F", ["ΔH₃ = ΔH₁ - ΔH₂.", "ΔH₃ = ΔH₁ + ΔH₂.", "ΔH₃ = ΔH₂ - ΔH₁.", "ΔH₃ = -ΔH₁ - ΔH₂."], 0, "Lấy (1) - (2): C và D bị triệt tiêu, chuyển E, F sang vế phải được A + B = E + F ⇒ ΔH₃ = ΔH₁ - ΔH₂."],
+        ["6.31", 6, "Cho các dữ kiện: ΔH°tt(25°C) của H₂O(k) = -241,8 kJ/mol;<br>FeO(r) + CO(k) → Fe(r) + CO₂(k); ΔH°₂₉₈ = -18,2 kJ;<br>2CO(k) + O₂(k) → 2CO₂(k); ΔH°₂₉₈ = -566,0 kJ.<br>Tính ΔH°₂₉₈ của: FeO(r) + H₂(k) → Fe(r) + H₂O(k)", ["-23,0 kJ.", "23,0 kJ.", "-41,2 kJ.", "41,2 kJ."], 1, "Đặt (1) H₂ + ½O₂ → H₂O(k) (-241,8); (2) FeO + CO → Fe + CO₂ (-18,2); (3) 2CO + O₂ → 2CO₂ (-566,0). Phản ứng cần tính = (2) + (1) - ½(3) ⇒ ΔH°₂₉₈ = -18,2 - 241,8 + 283,0 = +23,0 kJ."],
+        ["6.33", 6, "Chọn trường hợp đúng. Cho nhiệt tạo thành tiêu chuẩn ở 25°C của NH₃, NO, H₂O lần lượt bằng: -46,3; +90,4 và -241,8 kJ/mol. Tính hiệu ứng nhiệt tiêu chuẩn ở 25°C của: 2NH₃(k) + 5/2 O₂(k) → 2NO(k) + 3H₂O(k)", ["-452 kJ.", "+406,8 kJ.", "-406,8 kJ.", "+452 kJ."], 0, "Hệ quả 3 (ΔH_tt(O₂) = 0): ΔH°₂₉₈ = [2(90,4) + 3(-241,8)] - 2(-46,3) = -452 kJ."],
+        ["6.34", 6, "Chọn giá trị đúng. Xác định nhiệt đốt cháy tiêu chuẩn ở 25°C của khí metan: CH₄(k) + 2O₂(k) = CO₂(k) + 2H₂O(l). Biết ΔH°tt của CH₄(k), CO₂(k), H₂O(l) ở 25°C lần lượt là: -74,85; -393,51; -285,84 kJ/mol.", ["-604,5 kJ/mol.", "-890,34 kJ/mol.", "890,34 kJ/mol.", "604,5 kJ/mol."], 1, "Đốt 1 mol CH₄ nên ΔH_đc = [-393,51 + 2(-285,84)] - (-74,85) = -890,34 kJ/mol."],
+        ["6.36", 6, "Khí than ướt là hỗn hợp đồng thể tích của khí hydro và cacbon monoxit. Tính lượng nhiệt thoát ra khi đốt cháy 112 lít khí than ướt ở đktc, 25°C. Cho ΔH°tt của H₂O(l), CO(k) và CO₂(k) ở 25°C lần lượt là: -285,8; -110,5; -393,5 kJ/mol.", ["-1422 kJ.", "-679,3 kJ.", "-568,8 kJ.", "-2844 kJ."], 0, "n = 112/22,4 = 5 mol ⇒ n_H₂ = n_CO = 2,5 mol. Nhiệt đốt cháy H₂: -285,8 kJ/mol; CO: -393,5 - (-110,5) = -283,0 kJ/mol. Tổng ΔH = 2,5(-285,8) + 2,5(-283,0) = -1422 kJ."],
+        ["6.37", 6, "Tính nhiệt tạo thành tiêu chuẩn của MgCO₃(r) từ các dữ kiện:<br>(1) C(gr) + O₂(k) → CO₂(k); ΔH°₂₉₈ = -393,5 kJ<br>(2) 2Mg(r) + O₂(k) → 2MgO(r); ΔH°₂₉₈ = -1203,6 kJ<br>(3) MgO(r) + CO₂(k) → MgCO₃(r); ΔH°₂₉₈ = -117,7 kJ", ["-511,2 kJ/mol.", "-1624,2 kJ/mol.", "-1113 kJ/mol.", "-1007,8 kJ/mol."], 2, "Phản ứng tạo thành Mg(r) + C(gr) + 3/2 O₂(k) → MgCO₃(r) bằng (1) + ½(2) + (3). ΔH_tt = -393,5 + ½(-1203,6) + (-117,7) = -1113 kJ/mol."],
+
+        // ==================== CHƯƠNG VII: BIẾN THIÊN NĂNG LƯỢNG TỰ DO GIBBS (28 CÂU) ====================
+        ["7.1", 7, "Chọn phát biểu đúng. Biến đổi entropi ΔS khi đi từ trạng thái A sang trạng thái B bằng 5 con đường khác nhau (xem giản đồ P-V minh họa) có đặc tính sau:", ["Mỗi con đường có ΔS khác nhau.", "ΔS giống nhau cho cả 5 đường.", "Không so sánh được.", "ΔS của đường 3 nhỏ nhất vì là con đường ngắn nhất."], 1, "Entropi S là hàm trạng thái nên ΔS = S_B - S_A chỉ phụ thuộc trạng thái đầu A và cuối B, không phụ thuộc con đường đi. Cả 5 con đường có ΔS như nhau."],
+        ["7.2", 7, "Chọn phát biểu sai:", ["Phân tử càng phức tạp thì entropi càng lớn.", "Entropi của các chất tăng khi áp suất tăng.", "Entropi của các chất tăng khi nhiệt độ tăng.", "Entropi là thước đo xác suất trạng thái của hệ."], 1, "Nhiệt độ tăng thì entropi tăng, còn áp suất tăng thì entropi giảm (vì các phân tử bị dồn lại gần nhau, trật tự hơn) ⇒ B sai."],
+        ["7.3", 7, "Chọn so sánh đúng về entropi các chất sau:<br>1) S°(H₂O(l)) > S°(H₂O(k))<br>2) S°(MgO(r)) < S°(BaO(r))<br>3) S°(C₃H₈(k)) > S°(CH₄(k))<br>4) S°(Fe(r)) < S°(H₂(k))<br>5) S°(Ca(r)) > S°(C₃H₈(k))<br>6) S°(S(r)) < S°(S(l))", ["1, 2, 3, 4.", "Chỉ 2, 3, 6.", "1, 2, 3, 5, 6.", "2, 3, 4, 6."], 3, "(1) Sai vì S(l) < S(k); (2) Đúng (BaO phức tạp/nặng hơn MgO); (3) Đúng (C₃H₈ phức tạp hơn CH₄); (4) Đúng (rắn < khí); (5) Sai (rắn < khí); (6) Đúng (rắn < lỏng). Vậy 2, 3, 4, 6 đúng."],
+        ["7.4", 7, "Chọn phương án đúng. Xác định quá trình nào sau đây có ΔS < 0:", ["N₂(k, 25°C, 1 atm) → N₂(k, 0°C, 1 atm)", "O₂(k) → 2O(k)", "2CH₄(k) + 3O₂(k) → 2CO(k) + 4H₂O(k)", "NH₄Cl(r) → NH₃(k) + HCl(k)"], 0, "A: nhiệt độ giảm ở cùng áp suất nên độ hỗn loạn giảm ⇒ ΔS < 0. Các phương án B, C, D đều có Δn_khí > 0 nên ΔS > 0."],
+        ["7.5", 7, "Chọn câu đúng. Phản ứng: 2A(r) + B(l) = 2C(r) + D(l) có độ biến đổi:", ["ΔS = 0", "ΔS ≈ 0", "ΔS > 0", "ΔS < 0"], 1, "Phản ứng chỉ gồm rắn và lỏng, không có khí nên Δn_khí = 0, độ hỗn loạn gần như không đổi ⇒ ΔS ≈ 0 (không thể bằng 0 tuyệt đối vì các chất có entropi khác nhau)."],
+        ["7.6", 7, "Chọn phương án đúng. Phản ứng: 2A(k) + B(r) = 3C(r) + D(k) có độ biến đổi:", ["ΔS < 0", "ΔS = 0", "ΔS > 0", "Không dự đoán được dấu của ΔS"], 0, "Chỉ xét chất khí: Δn_khí = 1 - 2 = -1 < 0 ⇒ số mol khí giảm, độ hỗn loạn giảm ⇒ ΔS < 0."],
+        ["7.7", 7, "Chọn câu đúng. Quá trình hòa tan khí HCl trong nước xảy ra kèm theo sự thay đổi entropi chuyển pha (ΔS_cp) và entropi solvat hóa (ΔS_s) như sau:", ["ΔS_cp < 0, ΔS_s > 0", "ΔS_cp > 0, ΔS_s < 0", "ΔS_cp > 0, ΔS_s > 0", "ΔS_cp < 0, ΔS_s < 0"], 3, "Chuyển pha: HCl từ khí vào lỏng nên độ hỗn loạn giảm (ΔS_cp < 0). Solvat hóa: các phân tử nước sắp xếp trật tự quanh ion H⁺, Cl⁻ nên ΔS_s < 0."],
+        ["7.8", 7, "Chọn phương án đúng. Quá trình chuyển pha lỏng thành pha rắn của nước có:", ["ΔH < 0, ΔS < 0, ΔV > 0", "ΔH < 0, ΔS < 0, ΔV < 0", "ΔH > 0, ΔS < 0, ΔV < 0", "ΔH > 0, ΔS > 0, ΔV > 0"], 0, "Đông đặc tỏa nhiệt (ΔH < 0) và giảm độ hỗn loạn (ΔS < 0). Riêng nước có tính chất đặc biệt: nước đá có khối lượng riêng nhỏ hơn nước lỏng nên khi đông đặc thể tích tăng (ΔV > 0)."],
+        ["7.9", 7, "Chọn phương án đúng. Quá trình chuyển pha lỏng thành pha rắn của brom có:", ["ΔH < 0, ΔS < 0, ΔV > 0", "ΔH < 0, ΔS < 0, ΔV < 0", "ΔH > 0, ΔS < 0, ΔV < 0", "ΔH > 0, ΔS > 0, ΔV > 0"], 1, "Đông đặc tỏa nhiệt (ΔH < 0), giảm độ hỗn loạn (ΔS < 0). Khác với nước, brom rắn đặc hơn brom lỏng nên khi đông đặc thể tích giảm (ΔV < 0)."],
+        ["7.10", 7, "Chọn đáp án đúng. Tính ΔS° (J/K) ở 25°C của phản ứng: SO₂(k) + ½O₂(k) = SO₃(k). Biết S°₂₉₈ của SO₂(k), O₂(k) và SO₃(k) lần lượt là: 248, 205 và 257 (J/mol.K).", ["196", "-93,5", "-196", "93,5"], 1, "ΔS° = ΣS°(sp) - ΣS°(cđ) = 257 - (248 + ½×205) = -93,5 J/K."],
+        ["7.11", 7, "Chọn phát biểu sai:", ["Trong tự nhiên hầu hết các quá trình tự xảy ra đều là quá trình bất thuận nghịch.", "Ở điều kiện bình thường, các quá trình toả nhiều nhiệt là quá trình có khả năng tự xảy ra.", "Tất cả các quá trình sinh công có ích là quá trình tự xảy ra.", "Tất cả các quá trình kèm theo sự tăng độ hỗn loạn của hệ bất kỳ là quá trình tự xảy ra."], 3, "Tiêu chuẩn ΔS > 0 chỉ dùng cho hệ cô lập. Với hệ bất kỳ (vd đẳng nhiệt đẳng áp) phải xét ΔG = ΔH - TΔS; nếu ΔH quá dương thì quá trình vẫn không tự xảy ra ⇒ D sai."],
+        ["7.12", 7, "Chọn phương án đúng. Ở điều kiện đẳng áp, đẳng nhiệt:<br>1) Có thể kết luận là phản ứng không tự xảy ra khi ΔG của phản ứng dương tại điều kiện đang xét.<br>2) Có thể căn cứ vào hiệu ứng nhiệt để dự đoán khả năng tự phát của phản ứng ở nhiệt độ thường.<br>3) Ở nhiệt độ 1000 K, khả năng tự phát của mọi phản ứng hóa học hoàn toàn không phụ thuộc vào độ biến thiên entanpi ΔH của phản ứng đó.", ["Chỉ 1, 3.", "1, 2, 3.", "Chỉ 1, 2.", "Chỉ 2."], 2, "(1) Đúng; (2) Đúng vì ở nhiệt độ thường |ΔH| >> |TΔS| nên dấu ΔG do ΔH quyết định; (3) Sai vì ΔG = ΔH - TΔS luôn phụ thuộc ΔH."],
+        ["7.13", 7, "Chọn câu trả lời chính xác. Một phản ứng ở điều kiện đang xét có ΔG < 0 thì:", ["Luôn xảy ra tự phát trong thực tế.", "Có khả năng xảy ra tự phát trong thực tế.", "Ở trạng thái cân bằng.", "Không xảy ra."], 1, "ΔG < 0 chỉ cho biết phản ứng có khả năng tự xảy ra về mặt nhiệt động học; trong thực tế còn phụ thuộc tốc độ (động học)."],
+        ["7.14", 7, "Chọn những câu đúng. Ở 25°C, về phương diện nhiệt động hóa học:<br>1) Đa số phản ứng có thể xảy ra tự phát hoàn toàn khi ΔG°₂₉₈ < -40 kJ.<br>2) Phản ứng không xảy ra tự phát trong thực tế khi ΔG°₂₉₈ > 40 kJ.<br>3) Phản ứng không xảy ra tự phát trong thực tế khi ΔG°₂₉₈ > 0.<br>4) Đa số các phản ứng có thế đẳng áp tiêu chuẩn nằm trong khoảng -40 kJ < ΔG°₂₉₈ < 40 kJ xảy ra tự phát thuận nghịch trong thực tế.", ["Chỉ 1, 3.", "Chỉ 3, 4.", "Chỉ 1, 2, 4.", "1, 2, 3, 4."], 2, "(1), (2), (4) đúng. (3) Sai vì với 0 < ΔG°₂₉₈ < 40 kJ, phản ứng vẫn có thể diễn ra thuận nghịch tùy áp suất, nồng độ."],
+        ["7.15", 7, "Chọn trường hợp sai. Tiêu chuẩn có thể cho biết phản ứng có thể xảy ra tự phát được về mặt nhiệt động là:", ["Công chống áp suất ngoài A > 0.", "ΔH° < 0, ΔS° > 0.", "ΔG° < 0.", "Hằng số cân bằng K lớn hơn 1."], 0, "Dấu của công chống áp suất ngoài A không phải tiêu chuẩn xét chiều phản ứng. B, C, D đều tương đương ΔG° < 0 ⇒ tự phát."],
+        ["7.16", 7, "Chọn câu đúng. Phản ứng thu nhiệt mạnh:", ["Không thể xảy ra tự phát ở mọi nhiệt độ nếu biến thiên entropi của nó dương.", "Có thể xảy ra tự phát ở nhiệt độ thấp.", "Có thể xảy ra tự phát ở nhiệt độ cao nếu biến thiên entropi của nó âm.", "Có thể xảy ra tự phát ở nhiệt độ cao nếu biến thiên entropi của nó dương."], 3, "Phản ứng thu nhiệt mạnh (ΔH >> 0) muốn ΔG = ΔH - TΔS < 0 cần ΔS > 0 và nhiệt độ T đủ cao để TΔS > ΔH."],
+        ["7.17", 7, "Chọn phát biểu sai:", ["Một phản ứng thu nhiệt mạnh nhưng làm tăng entropi có thể xảy ra tự phát ở nhiệt độ thường.", "Một phản ứng tỏa nhiệt mạnh có thể xảy ra tự phát ở nhiệt độ thường.", "Một phản ứng thu nhiệt mạnh và biến thiên entropi dương chỉ có thể xảy ra tự phát ở nhiệt độ cao.", "Một phản ứng hầu như không thu hay phát nhiệt nhưng làm tăng entropi có thể xảy ra tự phát ở nhiệt độ thường."], 0, "Ở nhiệt độ thường |ΔH| >> |TΔS|, nên với ΔH >> 0 thì ΔG > 0, không tự xảy ra ở nhiệt độ thường mà chỉ xảy ra ở nhiệt độ cao ⇒ A sai."],
+        ["7.18", 7, "Chọn phương án đúng. Một phản ứng có thể tự xảy ra khi:<br>1) ΔH < 0 rất âm, ΔS < 0, nhiệt độ thường.<br>2) ΔH < 0, ΔS > 0.<br>3) ΔH > 0 rất lớn, ΔS > 0, nhiệt độ thường.<br>4) ΔH > 0, ΔS > 0, nhiệt độ cao.", ["Chỉ 1, 2.", "1, 3.", "1, 2 và 4.", "Chỉ 2, 4."], 2, "Xét ΔG = ΔH - TΔS: (1) nhiệt độ thường ΔH quyết định ⇒ ΔG < 0; (2) ΔG < 0 ở mọi T; (3) nhiệt độ thường ΔH quyết định ⇒ ΔG > 0; (4) nhiệt độ cao ΔS quyết định ⇒ ΔG < 0. Vậy 1, 2, 4 đúng."],
+        ["7.19", 7, "Chọn phát biểu đúng:<br>1) Đa số các phản ứng xảy ra ở nhiệt độ cao có biến thiên entropi dương.<br>2) Phản ứng không thể xảy ra tự phát ở mọi điều kiện khi ΔG°_pư > 0.<br>3) Một phản ứng thu nhiệt mạnh nhưng làm tăng entropi có thể xảy ra tự phát ở nhiệt độ thường.<br>4) Có thể kết luận ngay là phản ứng không xảy ra tự phát khi ΔG của phản ứng này lớn hơn không tại điều kiện đang xét.", ["Chỉ 1, 4.", "1, 2, 3, 4.", "Chỉ 1, 2, 4.", "Chỉ 1, 3, 4."], 0, "(1) Đúng; (2) Sai vì ΔG° > 0 chỉ ở điều kiện chuẩn, ở điều kiện khác vẫn có thể tự phát; (3) Sai vì chỉ xảy ra ở nhiệt độ cao; (4) Đúng."],
+        ["7.20", 7, "Chọn phương án đúng. Phản ứng: 3O₂(k) → 2O₃(k) ở đktc có ΔH°₂₉₈ = 284,4 kJ, ΔS°₂₉₈ = -139,8 J/K (ít đổi theo T). Phát biểu phù hợp:", ["Phản ứng không xảy ra tự phát ở mọi nhiệt độ.", "Ở nhiệt độ cao, phản ứng diễn ra tự phát.", "Ở nhiệt độ thấp, phản ứng diễn ra tự phát.", "Phản ứng xảy ra tự phát ở mọi nhiệt độ."], 0, "ΔH° > 0 và ΔS° < 0 ⇒ ΔG = ΔH - TΔS > 0 ở mọi nhiệt độ ⇒ không tự xảy ra ở bất kỳ nhiệt độ nào."],
+        ["7.21", 7, "Chọn phương án đúng. Cho các phản ứng ở điều kiện tiêu chuẩn:<br>1) 3O₂(k) → 2O₃(k); ΔH° > 0, không tự phát ở mọi nhiệt độ.<br>2) C₄H₈(k) + 6O₂(k) → 4CO₂(k) + 4H₂O(k); ΔH° < 0, tự phát ở mọi nhiệt độ.<br>3) CaCO₃(r) → CaO(r) + CO₂(k); ΔH° > 0, tự phát ở nhiệt độ cao.<br>4) SO₂(k) + ½O₂(k) → SO₃(k); ΔH° < 0, tự phát ở nhiệt độ thấp.", ["Chỉ 1, 3, 4.", "Chỉ 2, 4.", "1, 2, 3, 4.", "Chỉ 1, 3."], 2, "(1) Δn = -1 ⇒ ΔS < 0, ΔH > 0 ⇒ đúng. (2) Δn = +1 ⇒ ΔS > 0, ΔH < 0 ⇒ đúng. (3) Δn = +1 ⇒ ΔS > 0, ΔH > 0 ⇒ đúng. (4) Δn = -0,5 ⇒ ΔS < 0, ΔH < 0 ⇒ đúng. Cả 4 đều đúng."],
+        ["7.22", 7, "Chọn phương án đúng. Ở một điều kiện xác định, phản ứng A → B thu nhiệt mạnh và có thể tiến hành đến cùng. Có thể rút ra các kết luận sau:<br>1) ΔS_pư > 0 và nhiệt độ tiến hành phản ứng phải đủ cao.<br>2) Phản ứng B → A ở cùng điều kiện có ΔG_pư > 0.<br>3) Phản ứng B → A có thể tiến hành ở nhiệt độ thấp và có ΔS_pư < 0.", ["Chỉ 2.", "Chỉ 3.", "Chỉ 1.", "1, 2, 3."], 3, "A → B có ΔG < 0 và ΔH >> 0 ⇒ (1) phải có ΔS > 0 và T đủ cao (đúng); (2) phản ứng nghịch có ΔG_nghịch = -ΔG > 0 (đúng); (3) B → A có ΔH < 0 và ΔS < 0 nên có thể tự xảy ra ở nhiệt độ thấp (đúng)."],
+        ["7.23", 7, "Chọn trường hợp đúng. Biết rằng ở 0°C quá trình nóng chảy của nước đá ở áp suất khí quyển có ΔG = 0. Vậy ở 383 K quá trình nóng chảy của nước đá ở áp suất này có dấu của ΔG là:", ["ΔG > 0", "ΔG < 0", "ΔG = 0", "Không xác định được vì còn yếu tố khác."], 1, "Nóng chảy có ΔH > 0, ΔS > 0. Ở 273 K: ΔH = 273ΔS. Ở 383 K: ΔG = ΔH - 383ΔS = (273 - 383)ΔS < 0."],
+        ["7.24", 7, "Chọn trường hợp đúng. Căn cứ trên dấu ΔG°₂₉₈ của 2 phản ứng:<br>PbO₂(r) + Pb(r) = 2PbO(r) (ΔG°₂₉₈ < 0)<br>SnO₂(r) + Sn(r) = 2SnO(r) (ΔG°₂₉₈ > 0)<br>Trạng thái oxy hóa dương bền hơn đối với chì và thiếc là:", ["Chì (+4), thiếc (+2).", "Chì (+2), thiếc (+4).", "Chì (+4), thiếc (+4).", "Chì (+2), thiếc (+2)."], 1, "PbO₂ + Pb → 2PbO có ΔG° < 0 ⇒ tự tạo PbO ⇒ Pb(+2) bền hơn Pb(+4). SnO₂ + Sn → 2SnO có ΔG° > 0 ⇒ tự xảy ra chiều nghịch tạo SnO₂ ⇒ Sn(+4) bền hơn Sn(+2)."],
+        ["7.25", 7, "Chọn phương án đúng. Phản ứng: Mg(r) + ½O₂(k) → MgO(r) là phản ứng tỏa nhiệt mạnh. Xét dấu ΔH°, ΔS°, ΔG° của phản ứng này ở 25°C:", ["ΔH° < 0; ΔS° < 0; ΔG° < 0.", "ΔH° > 0; ΔS° > 0; ΔG° > 0.", "ΔH° < 0; ΔS° > 0; ΔG° > 0.", "ΔH° > 0; ΔS° > 0; ΔG° < 0."], 0, "Tỏa nhiệt mạnh ⇒ ΔH° < 0. Δn_khí = -0,5 < 0 ⇒ ΔS° < 0. Ở 25°C (nhiệt độ thấp), ΔH quyết định ⇒ ΔG° < 0."],
+        ["7.26", 7, "Chọn phương án đúng. Phản ứng CaCO₃(r) → CaO(r) + CO₂(k) là phản ứng thu nhiệt mạnh. Xét dấu ΔH°, ΔS°, ΔG° của phản ứng này ở 25°C:", ["ΔH° > 0; ΔS° > 0; ΔG° > 0.", "ΔH° < 0; ΔS° < 0; ΔG° < 0.", "ΔH° < 0; ΔS° > 0; ΔG° > 0.", "ΔH° > 0; ΔS° > 0; ΔG° < 0."], 0, "Thu nhiệt mạnh ⇒ ΔH° > 0. Tạo khí CO₂ (Δn = +1) ⇒ ΔS° > 0. Ở 25°C yếu tố ΔH quyết định ⇒ ΔG° > 0."],
+        ["7.27", 7, "Chọn phương án đúng. Phản ứng: H₂O₂(l) → H₂O(l) + ½O₂(k) tỏa nhiệt. Vậy phản ứng này có:", ["ΔH > 0; ΔS < 0; ΔG < 0 có thể xảy ra tự phát ở nhiệt độ thường.", "ΔH > 0; ΔS > 0; ΔG > 0 không thể xảy ra tự phát ở nhiệt độ thường.", "ΔH < 0; ΔS > 0; ΔG < 0 có thể xảy ra tự phát ở nhiệt độ thường.", "ΔH < 0; ΔS > 0; ΔG > 0 không thể xảy ra tự phát ở nhiệt độ thường."], 2, "Tỏa nhiệt ⇒ ΔH < 0. Tạo khí O₂ từ lỏng ⇒ ΔS > 0. Do đó ΔG < 0 ở mọi nhiệt độ, tự phát ở nhiệt độ thường."],
+        ["7.28", 7, "Chọn đáp án đầy đủ nhất. Phản ứng có thể xảy ra tự phát trong các trường hợp sau:", ["ΔH < 0, ΔS < 0; ΔH > 0, ΔS > 0; ΔH > 0, ΔS < 0", "ΔH > 0, ΔS < 0; ΔH < 0, ΔS > 0; ΔH < 0, ΔS < 0", "ΔH > 0, ΔS > 0; ΔH < 0, ΔS < 0; ΔH < 0, ΔS > 0", "ΔH < 0, ΔS > 0; ΔH > 0, ΔS > 0; ΔH > 0, ΔS < 0"], 2, "Chỉ có trường hợp ΔH > 0, ΔS < 0 là không bao giờ tự phát. Ba trường hợp còn lại (ΔH>0, ΔS>0 ở T cao; ΔH<0, ΔS<0 ở T thấp; ΔH<0, ΔS>0 ở mọi T) đều có thể tự phát ⇒ C."],
+
+        // ==================== CHƯƠNG VIII: CÂN BẰNG HÓA HỌC (43 CÂU) ====================
+        ["8.1", 8, "Chọn phát biểu đúng về phản ứng thuận nghịch:<br>1) Phản ứng có thể xảy ra theo chiều thuận hay theo chiều nghịch tùy điều kiện phản ứng.<br>2) Phản ứng xảy ra đồng thời theo hai chiều ngược nhau trong cùng một điều kiện.<br>3) Phản ứng tự xảy ra cho đến khi hết các chất phản ứng.", ["Chỉ 1.", "Chỉ 2.", "Chỉ 3.", "1 và 2."], 1, "Định nghĩa: phản ứng thuận nghịch xảy ra đồng thời theo hai chiều ngược nhau trong cùng một điều kiện (2 đúng). (1) sai vì nói \"tùy điều kiện\"; (3) sai vì không có chất nào phản ứng hết."],
+        ["8.2", 8, "Chọn phát biểu đúng khi thực hiện phản ứng thuận nghịch 2CO + O₂ ⇌ 2CO₂:<br>1) Người ta phải nạp vào bình phản ứng đúng 2 mol CO cho mỗi mol O₂.<br>2) Bất kể lượng nạp vào ban đầu của hai chất, chỉ có 1 mol O₂ sẽ phản ứng, và nó sẽ phản ứng với 2 mol CO.<br>3) Bất kể lượng nạp vào ban đầu của hai chất, CO sẽ phản ứng với O₂ theo tỉ lệ mol 2:1.<br>4) Khi nạp vào bình 2 mol CO và 1 mol O₂ chúng sẽ phản ứng sinh ra 2 mol CO₂.", ["Chỉ 3.", "2, 3.", "Chỉ 4.", "1, 4."], 0, "(1) Sai: lượng nạp tùy ý; (2) Sai: lượng phản ứng tùy lượng đầu và cân bằng; (3) Đúng: luôn phản ứng theo đúng tỉ lệ hệ số tỉ lượng 2:1; (4) Sai: phản ứng thuận nghịch không hoàn toàn nên tạo ít hơn 2 mol CO₂."],
+        ["8.3", 8, "Chọn phát biểu đúng về hệ cân bằng:", ["Hệ cân bằng là hệ trong đó có tỷ lệ thành phần các chất không thay đổi khi ta thay đổi các điều kiện khác.", "Hệ đang ở trạng thái cân bằng là hệ có các giá trị thông số trạng thái (nhiệt độ, áp suất, nồng độ,...) không thay đổi theo thời gian.", "Hệ có nhiệt độ và áp suất xác định là hệ cân bằng.", "Hệ cân bằng là hệ có nồng độ tất cả các chất đều bằng nhau."], 1, "Trạng thái cân bằng là trạng thái mà các thông số trạng thái (T, P, nồng độ...) không đổi theo thời gian khi điều kiện ngoài giữ nguyên."],
+        ["8.4", 8, "Xác định công thức đúng để tính hằng số cân bằng K_P của phản ứng: Fe₃O₄(r) + 4CO(k) ⇌ 3Fe(r) + 4CO₂(k)", ["K_P = (P⁴_CO₂·[Fe]³ / (P⁴_CO·[Fe₃O₄]))_cb", "K_P = ([Fe]³·[CO₂]⁴ / ([Fe₃O₄]·[CO]⁴))_cb", "K_P = (P⁴_CO₂ / P⁴_CO)_cb", "K_P = (P_CO₂ / P_CO)_cb"], 2, "Phản ứng dị thể: các chất rắn Fe₃O₄ và Fe không có mặt trong biểu thức K_P. Chỉ giữ lại các chất khí với số mũ bằng hệ số tỉ lượng: K_P = (P⁴_CO₂ / P⁴_CO)_cb."],
+        ["8.5", 8, "Xác định công thức đúng để tính hằng số cân bằng của phản ứng: SCl₂(dd) + H₂O(l) ⇌ 2HCl(dd) + SO(dd)", ["K = ([HCl]²[SO] / [SCl₂])_cb", "K = ([SCl₂][H₂O] / ([HCl][SO]))_cb", "K = ([HCl][SO] / ([SCl₂][H₂O]))_cb", "K = ([HCl]²[SO] / ([SCl₂][H₂O]))_cb"], 0, "Phản ứng trong dung dịch: nồng độ dung môi H₂O coi như không đổi nên không có mặt trong biểu thức K. Chỉ giữ lại các chất tan."],
+        ["8.6", 8, "Phản ứng CaCO₃(r) ⇌ CaO(r) + CO₂(k) có hằng số cân bằng K_p = (P_CO₂)_cb. Áp suất hơi của CaCO₃, CaO không có mặt trong biểu thức K_p vì:", ["Có thể xem áp suất hơi của CaCO₃ và CaO bằng 1 atm.", "Áp suất hơi bão hòa của chất rắn không đáng kể.", "Áp suất hơi bão hòa của CaCO₃ và CaO là hằng số ở nhiệt độ xác định.", "Áp suất hơi bão hòa của chất rắn không phụ thuộc vào nhiệt độ."], 2, "Trong cân bằng dị thể, áp suất hơi bão hòa của chất rắn thăng hoa là hằng số ở nhiệt độ xác định, nên gộp vào hằng số cân bằng K_p."],
+        ["8.7", 8, "Chọn phát biểu đúng. Cho phản ứng: A(dd) + B(dd) ⇌ C(dd) + D(dd). Nồng độ ban đầu của mỗi chất A, B, C, D là 1,5 mol/l. Sau khi cân bằng được thiết lập, nồng độ của C là 2 mol/l. Hằng số cân bằng K_c của phản ứng này là:", ["0,25", "1,5", "4", "2,0"], 2, "Nồng độ C tăng thêm 0,5 M ⇒ ở cân bằng: [C] = [D] = 2,0 M; [A] = [B] = 1,5 - 0,5 = 1,0 M. K_c = (2×2)/(1×1) = 4."],
+        ["8.8", 8, "Trong một bình kín dung tích 1 lít người ta nạp vào 1,0 mol khí A; 1,4 mol khí B và 0,5 mol khí C. Sau khi phản ứng: A(k) + B(k) ⇌ 2C(k) đạt trạng thái cân bằng, nồng độ cuối cùng của C là 0,75 mol/l. Tính hằng số cân bằng K_C của phản ứng trên.", ["12,5", "1,25", "0,15", "0,5"], 3, "V = 1 lít nên số mol = nồng độ. [C] tăng 2x = 0,25 ⇒ x = 0,125 M. Cân bằng: [A] = 0,875; [B] = 1,275; [C] = 0,75. K_C = 0,75² / (0,875 × 1,275) ≈ 0,5."],
+        ["8.9", 8, "Chọn phương án đúng. Phản ứng: C(gr) + CO₂(k) ⇌ 2CO(k); ở 815°C có hằng số cân bằng K_p = 10. Tại trạng thái cân bằng, áp suất chung của hệ là P = 1 atm. Hãy tính áp suất riêng phần của CO tại cân bằng.", ["0,85 atm.", "0,72 atm.", "0,68 atm.", "0,92 atm."], 3, "C rắn không vào K_p: K_p = P²_CO / P_CO₂ = 10 và P_CO + P_CO₂ = 1. Đặt P_CO = x ⇒ x² = 10(1 - x) ⇒ x² + 10x - 10 = 0 ⇒ nghiệm dương x ≈ 0,92 atm."],
+        ["8.10", 8, "Cho phản ứng: CuBr₂(r) ⇌ CuBr(r) + ½Br₂(k). Ở 550 K khi cân bằng có P_Br₂ = 0,671 atm. Cho 0,2 mol CuBr₂(r) vào bình chân không ở 550 K. Thể tích bình phải bằng bao nhiêu để toàn bộ CuBr₂ phân hủy hết? (R = 0,082 lít.atm/mol.K)", ["3,35 lít.", "13,4 lít.", "6,7 lít.", "8,3 lít."], 2, "Để 0,2 mol CuBr₂ phân hủy hết, n_Br₂ = 0,1 mol và áp suất Br₂ tối đa bằng P_cb = 0,671 atm. V_min = nRT/P = (0,1 × 0,082 × 550) / 0,671 ≈ 6,7 lít."],
+        ["8.11", 8, "Ở 46°C, phản ứng: N₂O₄(k) ⇌ 2NO₂(k) có hằng số cân bằng K_p = 0,66 và áp suất tổng khi cân bằng là 0,5 atm. Tính % phân ly của N₂O₄ tinh khiết ở 46°C.", ["80%.", "50%.", "75%.", "66,67%."], 1, "Xét 1 mol N₂O₄ đầu, độ phân ly α ⇒ cân bằng: (1-α) mol N₂O₄, 2α mol NO₂, tổng (1+α) mol. K_p = [4α² / (1 - α²)]·P = 0,66 với P = 0,5 ⇒ α² ≈ 0,248 ⇒ α ≈ 0,5 = 50%."],
+        ["8.12", 8, "Cho phản ứng thuận nghịch: H₂(k) + I₂(k) ⇌ 2HI(k). Hiệu suất của phản ứng là bao nhiêu nếu biết K_P = 54,5 và ban đầu chỉ có khí H₂ và I₂ với số mol bằng nhau?", ["Không đủ dữ kiện để tính.", "78,7%.", "65,3%.", "100%."], 1, "Δn = 0 nên K_P = K_C = (2x)² / (a-x)² = 54,5 ⇒ 2x/(a-x) = √54,5 ≈ 7,38 ⇒ x/a = 7,38/9,38 ≈ 0,787 = 78,7%."],
+        ["8.13", 8, "Cho một phản ứng thuận nghịch trong dung dịch lỏng: A + B ⇌ C + D có K_c = 200. Hỗn hợp có nồng độ C_A = C_B = 10⁻³ M, C_C = C_D = 0,01 M. Trạng thái của hệ ở điều kiện này:", ["Hệ đang dịch chuyển theo chiều nghịch.", "Hệ nằm ở trạng thái cân bằng.", "Hệ đang dịch chuyển theo chiều thuận.", "Không thể dự đoán được trạng thái của phản ứng."], 2, "Q = (C_C·C_D)/(C_A·C_B) = (0,01×0,01)/(10⁻³×10⁻³) = 100 < K_c = 200 ⇒ ΔG = RT·ln(Q/K) < 0 ⇒ hệ đang dịch chuyển theo chiều thuận."],
+        ["8.14", 8, "Quá trình khử thiếc IV bằng hydro: SnO₂(r) + 2H₂(k) ⇌ Sn(l) + 2H₂O(k) ở 1100 K có K_p = 10. Ở cùng nhiệt độ khi hỗn hợp khí (H₂ và hơi nước) có 24% H₂ theo thể tích thì hệ phản ứng:", ["Có ΔG₁₁₀₀ ≈ 0, hệ đạt trạng thái cân bằng.", "Có ΔG₁₁₀₀ > 0, phản ứng đang diễn ra theo chiều nghịch.", "Không đủ dữ liệu để kết luận về chiều hướng diễn ra.", "Có ΔG₁₁₀₀ < 0, phản ứng đang diễn ra theo chiều thuận."], 0, "Hỗn hợp khí có 24% H₂ và 76% H₂O ⇒ Q = (76/24)² ≈ 10,03 ≈ K_p = 10 ⇒ ΔG₁₁₀₀ ≈ 0, hệ đang ở trạng thái cân bằng."],
+        ["8.15", 8, "Cho K₁ và K₂ lần lượt là hằng số cân bằng của:<br>(1) XeF₆(k) + H₂O(k) ⇌ XeOF₄(k) + 2HF(k)<br>(2) XeO₄(k) + XeF₆(k) ⇌ XeOF₄(k) + XeO₃F₂(k)<br>Xác định K₃ của: (3) XeO₄(k) + 2HF(k) ⇌ XeO₃F₂(k) + H₂O(k)", ["K₃ = K₁ × K₂", "K₃ = K₁ + K₂", "K₃ = K₂ - K₁", "K₃ = K₂ / K₁"], 3, "Phản ứng (3) = (2) - (1). Khi trừ các phản ứng thì chia các hằng số cân bằng ⇒ K₃ = K₂ / K₁."],
+        ["8.16", 8, "Ở một nhiệt độ xác định, phản ứng: N₂(k) + 2O₂(k) ⇌ 2NO₂(k) có K = 100. Tính hằng số cân bằng K' ở cùng nhiệt độ của: NO₂(k) ⇌ ½N₂(k) + O₂(k).", ["K' = 0,01.", "K' = 0,0001.", "K' = 0,1.", "K' = 1,0."], 2, "Phản ứng cần tính là nghịch đảo và chia đôi hệ số của phản ứng đã cho ⇒ K' = (1/K)^(1/2) = (1/100)^(1/2) = 0,1."],
+        ["8.17", 8, "Ở một nhiệt độ xác định, phản ứng: S(r) + O₂(k) ⇌ SO₂(k) có K_C = 4,2×10⁵². Tính K'_C ở cùng nhiệt độ của: SO₂(k) ⇌ S(r) + O₂(k).", ["2,38×10⁵³", "4,2×10⁻⁵²", "4,2×10⁻⁵⁴", "2,38×10⁻⁵³"], 3, "Phản ứng nghịch nên K'_C = 1 / K_C = 1 / (4,2×10⁵²) ≈ 2,38×10⁻⁵³."],
+        ["8.18", 8, "Xét phản ứng: CH₃COOH + C₂H₅OH ⇌ CH₃COOC₂H₅ + H₂O; K_c = 4. Suy ra hằng số cân bằng K'_C của phản ứng thủy phân CH₃COOC₂H₅ là:", ["K'_C = 1/4.", "K'_C = 1/2.", "K'_C = 4.", "K'_C = -4."], 0, "Phản ứng thủy phân là phản ứng nghịch của phản ứng ester hóa nên K'_C = 1/K_C = 1/4."],
+        ["8.19", 8, "Chọn phát biểu đúng. Cho phản ứng: aA(l) + bB(k) ⇌ cC(k) + dD(l); có hằng số cân bằng K_c.<br>1) ΔG_T = ΔG°_T + RT·lnK_c, khi ΔG_T = 0 thì ΔG°_T = -RT·lnK_c.<br>2) K_c = (C_C^c · C_D^d) / (C_A^a · C_B^b) với C là nồng độ tại lúc đang xét.<br>3) Phản ứng luôn có K_P = K_C(RT)^Δn với Δn = Σn_sp - Σn_cđ của tất cả các chất (không phụ thuộc trạng thái).", ["1", "2", "3", "Không có phát biểu nào chính xác."], 3, "(1) Sai: phải là +RT·lnQ. (2) Sai: K_c tính theo nồng độ lúc cân bằng và không chứa chất lỏng nguyên chất A, D. (3) Sai: Δn chỉ tính số mol các chất khí."],
+        ["8.20", 8, "Chọn phát biểu đúng. Cho phản ứng: SnO₂(r) + 2H₂(k) ⇌ 2H₂O(k) + Sn(l)<br>1) ΔG = ΔG°_T + RT·ln([H₂O]² / [H₂]²)_τ<br>2) ΔG°_T = -RT·lnK_C; với K_C = ([H₂O]² / [H₂]²)_cb<br>3) Phản ứng có K_P = K_C vì Δn = 0", ["Chỉ 3.", "Chỉ 1, 2.", "Chỉ 2, 3.", "1, 2, 3."], 3, "SnO₂(r) và Sn(l) không có trong biểu thức, chỉ xét khí H₂ và H₂O. Δn_khí = 2 - 2 = 0 ⇒ K_P = K_C. Cả 1, 2, 3 đều đúng."],
+        ["8.21", 8, "Chọn phát biểu đúng. Cho phản ứng: H₂(k) + ½O₂(k) ⇌ H₂O(k); có ΔG°₂₉₈ = -54,64 kcal. Tính K_p ở 25°C (R = 1,987 cal/mol.K).", ["K_p = 40,1", "K_p = 10⁴⁰,¹", "K_p = 10⁹²,³", "K_p = 92,3"], 1, "lnK_p = -ΔG°/(RT) = 54640 / (1,987 × 298) ≈ 92,3 ⇒ lgK_p = 92,3 / 2,303 ≈ 40,1 ⇒ K_p = 10⁴⁰,¹."],
+        ["8.22", 8, "Kết luận nào dưới đây là đúng khi một phản ứng thuận nghịch có ΔG° < 0:", ["Hằng số cân bằng của phản ứng lớn hơn 0.", "Hằng số cân bằng của phản ứng nhỏ hơn 1.", "Hằng số cân bằng của phản ứng lớn hơn 1.", "Hằng số cân bằng của phản ứng nhỏ hơn 0."], 2, "Từ ΔG° = -RT·lnK: nếu ΔG° < 0 thì lnK > 0 ⇒ K > 1."],
+        ["8.23", 8, "Giả sử hệ đang ở cân bằng, phản ứng nào sau đây được coi là đã xảy ra hoàn toàn:", ["FeO(r) + CO(k) = Fe(r) + CO₂(k); K_cb = 0,403", "2C(r) + O₂(k) = 2CO(k); K_cb = 1×10¹⁶", "2Cl₂(k) + 2H₂O(k) = 4HCl(k) + O₂(k); K_cb = 1,88×10⁻¹⁵", "CH₃CH₂CH₂CH₃(k) = CH₃CH(CH₃)₂(k); K_cb = 2,5"], 1, "Phản ứng B có K = 10¹⁶ rất lớn, nên ở cân bằng gần như toàn bộ chất đầu đã chuyển thành sản phẩm ⇒ coi như xảy ra hoàn toàn."],
+        ["8.24", 8, "Phản ứng: 2NO₂(k) ⇌ N₂O₄(k) có ΔG°₂₉₈ = -4,835 kJ. Tính hằng số cân bằng K_C ở 298 K (R = 8,314 J/mol.K).", ["K_C = 172,03.", "K_C = 7,04.", "K_C = 17442,11.", "K_C = 4168,5."], 0, "lnK_p = 4835 / (8,314 × 298) ≈ 1,952 ⇒ K_p ≈ 7,04. Δn = 1 - 2 = -1 ⇒ K_C = K_p·(RT)^(-Δn) = 7,04 × (0,082 × 298) ≈ 172."],
+        ["8.25", 8, "Tại 298 K, phản ứng: 3H₂(k) + N₂(k) ⇌ 2NH₃(k) có K_p = 5,9×10⁵ và ΔH° = -92,2 kJ. Tính K_p tại 600 K (coi ΔH°, ΔS° không đổi).", ["4,3×10⁻³.", "8,2×10⁶.", "5,6×10⁵.", "3,7×10⁻²."], 0, "ln(K₆₀₀/K₂₉₈) = (ΔH°/R)(1/298 - 1/600) = (-92200/8,314)(1/298 - 1/600) ≈ -18,73 ⇒ K₆₀₀ = 5,9×10⁵ × e^(-18,73) ≈ 4,3×10⁻³."],
+        ["8.26", 8, "Khi hòa tan trong hexan, acid stearic chuyển hóa: 2C₁₇H₃₅COOH(dd) ⇌ (C₁₇H₃₅COOH)₂(dd). Tại 28°C có K_C = 2900 và tại 48°C có K_C = 40. Tính ΔH° và ΔS° của phản ứng:", ["ΔH° = -2,39 kJ và ΔS° = -537,32 J/K.", "ΔH° = -172,05 kJ và ΔS° = -505,32 J/K.", "ΔH° = -86,32 kJ và ΔS° = -249,14 J/K.", "ΔH° = -55,07 kJ và ΔS° = -80,31 J/K."], 1, "T₁ = 301 K, T₂ = 321 K. ln(40/2900) = (ΔH°/8,314)(1/301 - 1/321) ⇒ ΔH° ≈ -172,05 kJ. ΔS° = R·lnK₁ + ΔH°/T₁ = 8,314·ln2900 - 172050/301 ≈ -505,3 J/K."],
+        ["8.27", 8, "Chọn phát biểu đúng. Phản ứng: A(k) ⇌ B(k) + C(k) ở 300°C có K_p = 11,5 và ở 500°C có K_p = 33. Vậy phản ứng trên là quá trình:", ["Thu nhiệt.", "Đoạn nhiệt.", "Đẳng nhiệt.", "Tỏa nhiệt."], 0, "Khi T tăng thì K_p tăng (11,5 → 33) ⇒ ΔH° > 0 ⇒ phản ứng thu nhiệt."],
+        ["8.28", 8, "Chọn ý đúng:<br>1) Hệ đang cân bằng, nếu thay đổi P, T, nồng độ thì cân bằng chuyển dịch theo chiều chống lại sự thay đổi đó.<br>2) Khi tăng nhiệt độ, cân bằng chuyển dịch theo chiều tỏa nhiệt; khi giảm nhiệt độ thì theo chiều thu nhiệt.<br>3) Hằng số cân bằng của một phản ứng là đại lượng không đổi ở nhiệt độ xác định.<br>4) Khi thêm một chất vào hệ cân bằng, cân bằng dịch chuyển theo chiều làm giảm lượng chất đó.", ["Chỉ 1 và 3.", "1 và 2.", "Chỉ 1 và 4.", "1, 3 và 4."], 3, "(1) Đúng (Le Châtelier); (2) Sai (nói ngược: tăng T chuyển dịch chiều thu nhiệt); (3) Đúng; (4) Đúng."],
+        ["8.29", 8, "Chọn phát biểu đúng:<br>1) Thay đổi áp suất ngoài không làm đổi trạng thái cân bằng của phản ứng có Δn_khí = 0.<br>2) Khi tăng nhiệt độ, cân bằng của phản ứng bất kỳ dịch chuyển theo chiều thu nhiệt.<br>3) Khi giảm áp suất, cân bằng của phản ứng dịch chuyển theo chiều tăng số phân tử khí.<br>4) Hệ đã đạt trạng thái cân bằng thì lượng các chất thêm vào không ảnh hưởng đến trạng thái cân bằng.", ["Chỉ 1.", "Chỉ 2 và 3.", "1, 2 và 3.", "1, 3 và 4."], 2, "(1), (2), (3) đúng theo nguyên lý Le Châtelier; (4) sai vì thêm chất làm cân bằng chuyển dịch theo chiều làm giảm lượng chất đó."],
+        ["8.30", 8, "Cân bằng trong phản ứng: H₂(k) + Cl₂(k) ⇌ 2HCl(k) sẽ dịch chuyển theo chiều nào nếu tăng áp suất của hệ phản ứng?", ["Thuận.", "Nghịch.", "Không dịch chuyển.", "Không thể dự đoán."], 2, "Phản ứng có Δn_khí = 2 - (1+1) = 0 ⇒ thay đổi áp suất không làm chuyển dịch cân bằng."],
+        ["8.31", 8, "Cho phản ứng: CO₂(k) + H₂(k) ⇌ CO(k) + H₂O(k). Khi cân bằng trong bình 1 lít có 0,4 mol CO₂; 0,4 mol H₂; 0,8 mol CO; 0,8 mol H₂O. Tính K_C và cho biết nếu nén hệ giảm thể tích thì cân bằng chuyển dịch thế nào?", ["K_C = 8; theo chiều thuận.", "K_C = 4; không đổi.", "K_C = 4; theo chiều thuận.", "K_C = 8; theo chiều nghịch."], 1, "K_C = (0,8×0,8)/(0,4×0,4) = 4. Vì Δn_khí = 0 nên khi nén hệ (tăng áp suất) cân bằng không chuyển dịch."],
+        ["8.32", 8, "Một phản ứng tự xảy ra có ΔG° < 0. Giả thiết ΔH° và ΔS° không phụ thuộc nhiệt độ, khi tăng nhiệt độ thì hằng số cân bằng K_p sẽ:", ["Tăng.", "Giảm.", "Không đổi.", "Chưa thể kết luận được."], 3, "Sự biến đổi K theo T phụ thuộc dấu của ΔH°. Biết ΔG° < 0 chưa đủ xác định dấu của ΔH° nên chưa kết luận được."],
+        ["8.33", 8, "Chọn giải pháp hợp lý nhất. Cho phản ứng: N₂(k) + O₂(k) ⇌ 2NO(k); ΔH > 0. Để thu được nhiều NO ta có thể dùng biện pháp:", ["Tăng áp suất và giảm nhiệt độ.", "Giảm nhiệt độ.", "Tăng nhiệt độ.", "Giảm áp suất."], 2, "Δn_khí = 0 nên áp suất không ảnh hưởng. ΔH > 0 (thu nhiệt) nên tăng nhiệt độ làm cân bằng dịch chuyển theo chiều thuận."],
+        ["8.34", 8, "Cho phản ứng: 2SO₂(k) + O₂(k) ⇌ 2SO₃(k); ΔH < 0. Để được nhiều SO₃ hơn, chọn biện pháp nào:<br>1) Giảm nhiệt độ. 2) Tăng áp suất. 3) Thêm O₂.", ["Chỉ 1.", "Chỉ 2.", "Chỉ 2, 3.", "1, 2, 3."], 3, "ΔH < 0 ⇒ giảm T dịch chuyển thuận; Δn = -1 < 0 ⇒ tăng P dịch chuyển thuận; thêm O₂ ⇒ dịch chuyển thuận. Cả 3 đều đúng."],
+        ["8.35", 8, "Chọn ý đúng. Tác động nào sẽ làm tăng hiệu suất phản ứng: CaCO₃(r) ⇌ CaO(r) + CO₂(k); ΔH > 0", ["Tăng thể tích.", "Tăng nhiệt độ.", "Tăng áp suất.", "Tăng nồng độ CO₂."], 1, "ΔH > 0 nên tăng nhiệt độ làm cân bằng chuyển dịch theo chiều thuận (tăng hiệu suất)."],
+        ["8.36", 8, "Phản ứng: N₂(k) + O₂(k) ⇌ 2NO(k); ΔH > 0 đang ở cân bằng. Hiệu suất tăng khi áp dụng:<br>1) Dùng xúc tác. 2) Nén hệ. 3) Tăng nhiệt độ. 4) Giảm áp suất hệ.", ["Chỉ 3.", "1 và 2.", "Chỉ 1 và 3.", "1, 3 và 4."], 0, "(1) Xúc tác không làm chuyển dịch cân bằng; (2),(4) Δn = 0 nên áp suất không ảnh hưởng; (3) ΔH > 0 nên tăng T làm tăng hiệu suất."],
+        ["8.37", 8, "Chọn câu đúng. Xét hệ cân bằng: CO(k) + Cl₂(k) ⇌ COCl₂(k); ΔH < 0. Sự thay đổi nào dẫn đến cân bằng chuyển dịch theo chiều thuận:", ["Tăng nhiệt độ.", "Giảm thể tích bình phản ứng bằng cách nén hệ.", "Giảm áp suất.", "Tăng nồng độ COCl₂."], 1, "Δn = 1 - 2 = -1 < 0 và ΔH < 0. Nén hệ (tăng P) làm cân bằng dịch chuyển theo chiều giảm số mol khí (chiều thuận)."],
+        ["8.38", 8, "Phản ứng thủy phân của ester: ester + nước ⇌ acid + rượu. Để tăng hiệu suất phản ứng (dịch chuyển theo chiều thuận) ta dùng:<br>1) Dùng nhiều nước hơn. 2) Thủy phân trong môi trường base. 3) Loại bỏ rượu.", ["Chỉ 1.", "Chỉ 2.", "Chỉ 3.", "1, 2, 3."], 3, "(1) Tăng nồng độ tác chất; (2) Base trung hòa acid làm giảm sản phẩm; (3) Loại bỏ rượu làm giảm sản phẩm ⇒ cả 3 đều chuyển dịch theo chiều thuận."],
+        ["8.39", 8, "Cho các phản ứng:<br>(1) N₂(k) + O₂(k) ⇌ 2NO(k); ΔH° > 0<br>(2) N₂(k) + 3H₂(k) ⇌ 2NH₃(k); ΔH° < 0<br>(3) MgCO₃(r) ⇌ MgO(r) + CO₂(k); ΔH° > 0<br>Với phản ứng nào ta nên dùng nhiệt độ cao và áp suất thấp để cân bằng dịch chuyển theo chiều thuận?", ["Chỉ (1).", "Chỉ (3).", "Chỉ (2).", "(1) và (2)."], 1, "Cần ΔH > 0 và Δn_khí > 0. Chỉ (3) thỏa mãn cả hai (ΔH° > 0, Δn = +1)."],
+        ["8.40", 8, "Các phản ứng đang ở cân bằng ở nhiệt độ T, áp suất P:<br>(1) N₂(k) + 3H₂(k) ⇌ 2NH₃(k); ΔH° < 0<br>(2) 2SO₂(k) + O₂(k) ⇌ 2SO₃(k); ΔH° < 0<br>(3) C(gr) + H₂O(k) ⇌ CO(k) + H₂(k); ΔH° > 0<br>Cân bằng sẽ chuyển dịch theo chiều nào khi giảm nhiệt độ và tăng áp suất:", ["(1) thuận, (2) thuận, (3) nghịch", "(1) thuận, (2) nghịch, (3) thuận", "(1) nghịch, (2) thuận, (3) nghịch", "(1) nghịch, (2) nghịch, (3) thuận"], 0, "Giảm T ưu tiên chiều tỏa nhiệt (ΔH < 0). Tăng P ưu tiên chiều giảm số mol khí. Cả (1) và (2) đều tỏa nhiệt và giảm mol khí ⇒ Thuận. (3) thu nhiệt và tăng mol khí ⇒ Nghịch."],
+        ["8.41", 8, "Chọn phương án đúng. Sự tăng nhiệt độ có tác dụng làm tăng hằng số cân bằng K của phản ứng:", ["Thu nhiệt.", "Tỏa nhiệt.", "Tự phát.", "Đoạn nhiệt."], 0, "Theo phương trình Van't Hoff: d(lnK)/dT = ΔH°/(RT²). Nếu ΔH° > 0 (thu nhiệt) thì khi T tăng, K sẽ tăng."],
+        ["8.42", 8, "Chọn câu đúng. Khi một hệ cân bằng hóa học bị tác động bởi sự thay đổi nhiệt độ:", ["Hằng số cân bằng K thay đổi, cân bằng chuyển dịch.", "Hằng số cân bằng K không đổi, cân bằng không chuyển dịch.", "Hằng số cân bằng K thay đổi, nhưng cân bằng không chuyển dịch.", "Hằng số cân bằng K không đổi, cân bằng vẫn chuyển dịch."], 0, "Nhiệt độ là yếu tố làm thay đổi giá trị của hằng số cân bằng K, dẫn tới sự chuyển dịch cân bằng hóa học."],
+        ["8.43", 8, "Chọn trường hợp đúng. Cho phản ứng: N₂O₄(k) ⇌ 2NO₂(k); ΔH°₂₉₈ = 58,04 kJ. Khi tăng nhiệt độ, màu nâu đỏ của NO₂ đậm lên là do:", ["Cân bằng chuyển dịch theo chiều thuận vì phản ứng thu nhiệt.", "Cân bằng chuyển dịch theo chiều nghịch vì phản ứng tỏa nhiệt.", "Cân bằng chuyển dịch theo chiều thuận vì phản ứng tỏa nhiệt.", "Hằng số cân bằng K giảm."], 0, "Phản ứng có ΔH° > 0 (thu nhiệt). Khi tăng nhiệt độ, cân bằng chuyển dịch theo chiều thu nhiệt (chiều thuận) tạo ra nhiều NO₂ có màu nâu đỏ."],
+
+        // ==================== CHƯƠNG X: ĐỘNG HÓA HỌC (28 CÂU) ====================
+        ["10.1", 10, "Chọn phát biểu đúng: Đối với phản ứng một chiều, tốc độ phản ứng sẽ:", ["Tăng dần theo thời gian.", "Không đổi theo thời gian.", "Giảm dần theo thời gian.", "Ban đầu tăng sau đó giảm."], 2, "Trong quá trình phản ứng, nồng độ chất tham gia giảm dần nên tốc độ phản ứng v = k·Cᵃ·Cᵇ sẽ giảm dần theo thời gian."],
+        ["10.2", 10, "Chọn câu sai. Hằng số tốc độ phản ứng k:", ["Không phụ thuộc chất xúc tác.", "Phụ thuộc vào nhiệt độ.", "Phụ thuộc bản chất chất phản ứng.", "Không phụ thuộc vào nồng độ chất phản ứng."], 0, "Hằng số tốc độ k phụ thuộc bản chất phản ứng, nhiệt độ và CHẤT XÚC TÁC. Phát biểu \"Không phụ thuộc chất xúc tác\" ⇒ Sai."],
+        ["10.3", 10, "Chọn câu sai: Hằng số tốc độ của phản ứng nA + mB = AₙBₘ:", ["Là tốc độ của phản ứng khi nồng độ các chất phản ứng bằng 1 M.", "Đơn vị phụ thuộc vào bậc chung của phản ứng.", "Tăng khi nhiệt độ phản ứng tăng.", "Tăng khi nồng độ chất phản ứng tăng."], 3, "Hằng số tốc độ k chỉ phụ thuộc bản chất, nhiệt độ, chất xúc tác; KHÔNG phụ thuộc vào nồng độ chất phản ứng."],
+        ["10.4", 10, "Cho phản ứng đơn giản: aA + bB → cC. Biểu thức tốc độ phản ứng là:", ["v = k [A] [B]", "v = k [A]ᵃ [B]ᵇ", "v = k [C]ᶜ", "v = k [A]ᵇ [B]ᵃ"], 1, "Đối với phản ứng đơn giản (nguyên tố), bậc phản ứng trùng với hệ số tỷ lượng: v = k·[A]ᵃ·[B]ᵇ."],
+        ["10.5", 10, "Phản ứng phân hủy oxit dinito: 2N₂O₅(k) → 4NO₂(k) + O₂(k). Nếu nồng độ N₂O₅ giảm từ 1,2 M xuống 0,8 M trong 20 phút thì tốc độ trung bình của phản ứng theo N₂O₅ là:", ["0,02 M/phút", "0,01 M/phút", "0,04 M/phút", "0,005 M/phút"], 0, "v_tb = -ΔC / Δt = (1,2 - 0,8) / 20 = 0,4 / 20 = 0,02 M/phút."],
+        ["10.6", 10, "Phản ứng bậc 1 có chu kỳ bán hủy t₁/₂ = 50 phút. Tính hằng số tốc độ k của phản ứng:", ["0,01386 phút⁻¹", "0,02000 phút⁻¹", "0,01000 phút⁻¹", "0,05000 phút⁻¹"], 0, "Đối với phản ứng bậc 1: k = ln2 / t₁/₂ = 0,693 / 50 ≈ 0,01386 phút⁻¹."],
+        ["10.7", 10, "Một phản ứng bậc 1 tiến hành được 50% sau 45 phút. Hỏi sau bao lâu phản ứng tiến hành được 75%?", ["90 phút", "67,5 phút", "135 phút", "60 phút"], 0, "50% ứng với 1 chu kỳ bán hủy t₁/₂ = 45 phút. 75% ứng với 2 chu kỳ bán hủy: t = 2 × 45 = 90 phút."],
+        ["10.8", 10, "Chọn câu đúng. Cho phản ứng: 2A + B → C. Biết khi tăng nồng độ A lên 2 lần thì tốc độ tăng 4 lần; tăng B lên 2 lần thì tốc độ tăng 2 lần. Bậc của phản ứng là:", ["Bậc 1 theo A, bậc 1 theo B, tổng bậc 2.", "Bậc 2 theo A, bậc 1 theo B, tổng bậc 3.", "Bậc 2 theo A, bậc 2 theo B, tổng bậc 4.", "Bậc 1 theo A, bậc 2 theo B, tổng bậc 3."], 1, "v = k[A]ˣ[B]ʸ. Tăng A 2 lần v tăng 4=2² ⇒ x=2. Tăng B 2 lần v tăng 2=2¹ ⇒ y=1. Tổng bậc = 2 + 1 = 3."],
+        ["10.9", 10, "Khi nhiệt độ tăng thêm 30°C (từ 20°C lên 50°C), tốc độ phản ứng tăng lên 27 lần. Hệ số nhiệt độ γ của tốc độ phản ứng là:", ["2", "3", "4", "2,5"], 1, "v₂/v₁ = γ^(ΔT/10) ⇒ 27 = γ^(30/10) = γ³ ⇒ γ = 3."],
+        ["10.10", 10, "Phản ứng có hệ số nhiệt độ γ = 2. Ở 20°C phản ứng kết thúc trong 16 phút. Ở 50°C phản ứng kết thúc trong thời gian bao lâu?", ["2 phút", "4 phút", "1 phút", "8 phút"], 0, "Thời gian phản ứng tỉ lệ nghịch với tốc độ: t₁/t₂ = v₂/v₁ = γ^(ΔT/10) = 2^(30/10) = 8. Do đó t₂ = 16 / 8 = 2 phút."],
+        ["10.11", 10, "Chọn câu đúng. Năng lượng hoạt hóa E_a của phản ứng là:", ["Năng lượng tối thiểu cần cung cấp cho các tiểu phân phản ứng để chúng trở thành các tiểu phân hoạt động.", "Nhiệt phản ứng ở điều kiện tiêu chuẩn.", "Tổng năng lượng của các chất sản phẩm.", "Hiệu số năng lượng giữa chất sản phẩm và chất đầu."], 0, "Theo thuyết va chạm hoạt động, E_a là năng lượng tối thiểu cần cung cấp để chuyển các phân tử thường thành phân tử hoạt động có khả năng phản ứng."],
+        ["10.12", 10, "Khi thêm chất xúc tác dương vào hệ phản ứng thì:", ["Làm tăng năng lượng hoạt hóa E_a.", "Làm giảm năng lượng hoạt hóa E_a.", "Không ảnh hưởng đến E_a.", "Làm tăng ΔH của phản ứng."], 1, "Chất xúc tác dương tạo ra con đường phản ứng mới có năng lượng hoạt hóa E_a nhỏ hơn, làm tăng tốc độ phản ứng."],
+        ["10.13", 10, "Phương trình Arrhenius biểu diễn sự phụ thuộc của hằng số tốc độ k vào nhiệt độ T là:", ["k = A · e^(-E_a / RT)", "k = A · e^(E_a / RT)", "k = A · ln(E_a / RT)", "k = E_a / (RT)"], 0, "Phương trình Arrhenius dạng lũy thừa: k = A · exp(-E_a / RT), trong đó A là hằng số tần số va chạm, E_a là năng lượng hoạt hóa."],
+        ["10.14", 10, "Một phản ứng có năng lượng hoạt hóa E_a = 52 kJ/mol. Tính tỉ số hằng số tốc độ k₃₀₀ / k₂₉₀ (R = 8,314 J/mol.K):", ["1,97", "3,52", "1,25", "2,50"], 0, "ln(k₃₀₀/k₂₉₀) = (E_a/R)·(1/290 - 1/300) = (52000/8,314)·(10 / 87000) ≈ 0,678 ⇒ k₃₀₀/k₂₉₀ = e⁰,⁶⁷⁸ ≈ 1,97."],
+        ["10.15", 10, "Phản ứng đồng thể là phản ứng diễn ra:", ["Trong một pha duy nhất.", "Giữa các chất ở các pha khác nhau.", "Trên bề mặt chất xúc tác rắn.", "Trong hệ dị thể."], 0, "Phản ứng đồng thể xảy ra trong một pha duy nhất (toàn thể tích), không có bề mặt phân chia pha."],
+        ["10.16", 10, "Chọn câu đúng về vai trò của chất xúc tác:", ["Làm thay đổi ΔH của phản ứng.", "Làm thay đổi hằng số cân bằng K.", "Làm tăng tốc độ phản ứng thuận và nghịch với số lần như nhau.", "Chỉ làm tăng tốc độ phản ứng thuận."], 2, "Chất xúc tác làm giảm năng lượng hoạt hóa của cả chiều thuận và chiều nghịch như nhau, nên làm tăng tốc độ thuận và nghịch cùng một tỉ lệ."],
+        ["10.17", 10, "Bậc phản ứng:", ["Có thể là số nguyên, số phân số hoặc số 0.", "Luôn luôn là số nguyên dương.", "Luôn bằng tổng các hệ số trong phương trình hóa học.", "Chỉ có thể nhận giá trị 1 hoặc 2."], 0, "Bậc phản ứng xác định bằng thực nghiệm, có thể là số nguyên, phân số, âm hoặc bằng 0."],
+        ["10.18", 10, "Phản ứng bậc 0 có phương trình tốc độ là:", ["v = k", "v = k[A]", "v = k[A]²", "v = k[A][B]"], 0, "Phản ứng bậc 0: v = k·[A]⁰ = k. Tốc độ phản ứng không phụ thuộc vào nồng độ chất phản ứng."],
+        ["10.19", 10, "Đơn vị của hằng số tốc độ k đối với phản ứng bậc 2 là:", ["mol⁻¹ · L · s⁻¹", "s⁻¹", "L · mol⁻¹ · s", "mol · L⁻¹ · s⁻¹"], 0, "Phản ứng bậc 2: v = k·C² ⇒ k = v / C² có đơn vị là (M/s) / M² = M⁻¹·s⁻¹ = L·mol⁻¹·s⁻¹."],
+        ["10.20", 10, "Trong cơ chế phản ứng gồm nhiều bước nối tiếp nhau, bước quyết định tốc độ chung của phản ứng là:", ["Bước chậm nhất.", "Bước nhanh nhất.", "Bước đầu tiên.", "Bước cuối cùng."], 0, "Trong chuỗi các phản ứng nối tiếp, bước có tốc độ chậm nhất (năng lượng hoạt hóa cao nhất) sẽ quyết định tốc độ của toàn bộ quá trình."],
+        ["10.21", 10, "Khi tăng nồng độ chất phản ứng, tốc độ phản ứng tăng là do:", ["Số va chạm hiệu quả giữa các phân tử tăng lên.", "Năng lượng hoạt hóa giảm xuống.", "Hằng số tốc độ k tăng lên.", "Nhiệt độ của hệ tăng."], 0, "Nồng độ tăng làm mật độ phân tử tăng, dẫn đến tần số va chạm và số va chạm hiệu quả trong một đơn vị thời gian tăng lên."],
+        ["10.22", 10, "Phản ứng: A + 2B → C có biểu thức tốc độ thực nghiệm v = k[A][B]². Nếu thể tích bình phản ứng giảm đi 3 lần thì tốc độ phản ứng tăng lên bao nhiêu lần?", ["27 lần", "9 lần", "6 lần", "3 lần"], 0, "Thể tích giảm 3 lần ⇒ nồng độ [A] và [B] đều tăng 3 lần. v' = k(3[A])(3[B])² = 27 · k[A][B]² = 27v."],
+        ["10.23", 10, "Chu kỳ bán hủy t₁/₂ của phản ứng bậc 0 phụ thuộc nồng độ ban đầu C₀ theo biểu thức:", ["t₁/₂ = C₀ / (2k)", "t₁/₂ = 0,693 / k", "t₁/₂ = 1 / (k C₀)", "t₁/₂ = 2k / C₀"], 0, "Phản ứng bậc 0: C = C₀ - kt. Tại t = t₁/₂ thì C = C₀/2 ⇒ t₁/₂ = C₀ / (2k). Tỉ lệ thuận với nồng độ ban đầu C₀."],
+        ["10.24", 10, "Chu kỳ bán hủy t₁/₂ của phản ứng bậc 2 phụ thuộc nồng độ ban đầu C₀ theo biểu thức:", ["t₁/₂ = 1 / (k C₀)", "t₁/₂ = C₀ / (2k)", "t₁/₂ = 0,693 / k", "t₁/₂ = k / C₀"], 0, "Phản ứng bậc 2: 1/C - 1/C₀ = kt. Tại C = C₀/2 ⇒ 2/C₀ - 1/C₀ = kt₁/₂ ⇒ t₁/₂ = 1 / (k C₀). Tỉ lệ nghịch với C₀."],
+        ["10.25", 10, "Năng lượng hoạt hóa E_a của phản ứng thuận và nghịch liên hệ với hiệu ứng nhiệt ΔH của phản ứng theo công thức:", ["ΔH = E_a(thuận) - E_a(nghịch)", "ΔH = E_a(nghịch) - E_a(thuận)", "ΔH = E_a(thuận) + E_a(nghịch)", "ΔH = E_a(thuận) · E_a(nghịch)"], 0, "Theo sơ đồ năng lượng trạng thái chuyển tiếp: ΔH = E_a(thuận) - E_a(nghịch). Phản ứng tỏa nhiệt có E_a(thuận) < E_a(nghịch)."],
+        ["10.26", 10, "Phản ứng hạt nhân phân rã phóng xạ tuân theo quy luật Động hóa học bậc mấy?", ["Bậc 1", "Bậc 0", "Bậc 2", "Bậc 3"], 0, "Mọi quá trình phân rã phóng xạ nguyên tử đều là phản ứng đơn phân tử tuân theo động học bậc 1."],
+        ["10.27", 10, "Cho phản ứng A → Sản phẩm. Vẽ đồ thị ln[A] theo thời gian t thu được một đường thẳng. Bậc của phản ứng là:", ["Bậc 1", "Bậc 0", "Bậc 2", "Bậc 3"], 0, "Phương trình động học bậc 1: ln[A] = ln[A]₀ - kt ⇒ Đồ thị biểu diễn ln[A] theo t là đường thẳng có hệ số góc -k."],
+        ["10.28", 10, "Cho phản ứng A → Sản phẩm. Vẽ đồ thị 1/[A] theo thời gian t thu được một đường thẳng. Bậc của phản ứng là:", ["Bậc 2", "Bậc 1", "Bậc 0", "Bậc 3"], 0, "Phương trình động học bậc 2: 1/[A] = 1/[A]₀ + kt ⇒ Đồ thị 1/[A] theo t là đường thẳng có hệ số góc +k."],
+
+        // ==================== CHƯƠNG XI: DUNG DỊCH LỎNG (33 CÂU) ====================
+        ["11.1", 11, "Chọn đáp án đúng: Đương lượng gram của HNO₃ (Phân tử lượng M) trong phản ứng trung hòa bằng:", ["M / 1", "M / 2", "M / 3", "M / 6"], 0, "HNO₃ là acid đơn nấc, phân ly 1 ion H⁺ nên số đương lượng z = 1 ⇒ Đương lượng E = M / 1."],
+        ["11.2", 11, "Tính nồng độ molal (m) của dung dịch chứa 18 g glucose (C₆H₁₂O₆, M = 180 g/mol) trong 200 g nước:", ["0,5 m", "1,0 m", "0,1 m", "0,25 m"], 0, "n_glucose = 18 / 180 = 0,1 mol. m = n / m_H₂O(kg) = 0,1 / 0,2 = 0,5 mol/kg (m)."],
+        ["11.3", 11, "Phát biểu nào sau đây đúng về định luật Raoult I:", ["Áp suất hơi bão hòa của dung môi trên dung dịch tỉ lệ thuận với phân mol của dung môi trong dung dịch.", "Độ giảm tương đối áp suất hơi bão hòa của dung môi bằng phân mol của chất tan.", "Cả A và B đều đúng.", "Áp suất hơi bão hòa của dung dịch luôn lớn hơn dung môi nguyên chất."], 2, "Định luật Raoult I: P = P⁰·X_dm và (P⁰ - P)/P⁰ = X_ct. Cả A và B đều đúng."],
+        ["11.4", 11, "Chọn phát biểu sai về dung dịch bão hòa:", ["Dung dịch bão hòa là dung dịch không thể hòa tan thêm chất tan ở nhiệt độ xác định.", "Dung dịch bão hòa luôn là dung dịch đậm đặc.", "Dung dịch bão hòa nằm ở trạng thái cân bằng động với chất tan chưa hòa tan.", "Độ tan của đa số chất rắn trong nước tăng khi nhiệt độ tăng."], 1, "Dung dịch bão hòa chỉ phụ thuộc độ tan ở nhiệt độ đó. Với chất ít tan (như CaSO₄, AgCl), dung dịch bão hòa vẫn rất loãng ⇒ phát biểu \"luôn là dung dịch đậm đặc\" là sai."],
+        ["11.5", 11, "Hằng số nghiệm sôi K_s và hằng số nghiệm đông K_đ của dung dịch phụ thuộc vào:", ["Bản chất của dung môi.", "Bản chất của chất tan.", "Nồng độ chất tan.", "Áp suất khí quyển."], 0, "K_s và K_đ là các đại lượng đặc trưng cho bản chất của từng DUNG MÔI nguyên chất, không phụ thuộc chất tan."],
+        ["11.6", 11, "Độ tăng nhiệt độ sôi ΔT_s và độ giảm nhiệt độ đông đặc ΔT_đ của dung dịch chất tan không điện ly, không bay hơi tỉ lệ thuận với:", ["Nồng độ molal (m) của dung dịch.", "Nồng độ mol (C_M) của dung dịch.", "Nồng độ phần trăm C%.", "Thể tích dung dịch."], 0, "Định luật Raoult II: ΔT_s = K_s · m và ΔT_đ = K_đ · m. Tỉ lệ thuận với nồng độ molal m."],
+        ["11.7", 11, "Áp suất thẩm thấu π của dung dịch chất tan không điện ly được tính theo công thức van't Hoff:", ["π = C_M · R · T", "π = m · R · T", "π = C% · R · T", "π = P⁰ · X"], 0, "Công thức van't Hoff tính áp suất thẩm thấu dung dịch loãng chất không điện ly: π = C_M · R · T."],
+        ["11.8", 11, "Hòa tan 9 g chất không điện ly X vào 100 g nước thu được dung dịch đông đặc ở -0,93°C. Biết K_đ(H₂O) = 1,86 °C/m. Khối lượng phân tử M của X là:", ["180 g/mol", "90 g/mol", "60 g/mol", "342 g/mol"], 0, "ΔT_đ = 0,93°C. m = ΔT_đ / K_đ = 0,93 / 1,86 = 0,5 m. m = (9/M) / 0,1 = 0,5 ⇒ M = 180 g/mol."],
+        ["11.9", 11, "Dung dịch A chứa 6 g ure ((NH₂)₂CO, M = 60) trong 1 lít nước. Dung dịch B chứa 18 g glucose (C₆H₁₂O₆, M = 180) trong 1 lít nước. Nhận xét đúng ở cùng nhiệt độ là:", ["Hai dung dịch đẳng trương (có cùng áp suất thẩm thấu).", "Dung dịch A ưu trương so với B.", "Dung dịch B ưu trương so me A.", "Dung dịch A có nhiệt độ sôi cao hơn B."], 0, "C_M(A) = 6/60 = 0,1 M. C_M(B) = 18/180 = 0,1 M. Nồng độ mol bằng nhau nên hai dung dịch có áp suất thẩm thấu bằng nhau ⇒ Đẳng trương."],
+        ["11.10", 11, "Theo định luật Henry, độ tan S của một chất khí trong chất lỏng tỉ lệ thuận với:", ["Áp suất riêng phần của chất khí đó trên bề mặt chất lỏng.", "Nhiệt độ của dung dịch.", "Thể tích của chất lỏng.", "Khối lượng phân tử chất khí."], 0, "Định luật Henry: S = k_H · P_khi. Độ tan chất khí tỉ lệ thuận với áp suất riêng phần của khí trên bề mặt dung dịch."],
+        ["11.11", 11, "Khi đun nóng một dung dịch chứa chất khí hòa tan, độ tan của chất khí sẽ:", ["Giảm xuống và khí thoát ra khỏi dung dịch.", "Tăng lên.", "Không đổi.", "Ban đầu giảm sau đó tăng."], 0, "Quá trình hòa tan khí vào lỏng tỏa nhiệt (ΔH < 0). Theo Le Châtelier, khi tăng nhiệt độ cân bằng dịch chuyển theo chiều thu nhiệt ⇒ Khí thoát ra, độ tan giảm."],
+        ["11.12", 11, "Nồng độ phần mol (X_A) của chất A trong hỗn hợp 2 chất A và B được tính theo công thức:", ["X_A = n_A / (n_A + n_B)", "X_A = n_A / n_B", "X_A = m_A / (m_A + m_B)", "X_A = n_A · 100%"], 0, "Phân mol X_A là tỉ số giữa số mol chất A và tổng số mol tất cả các chất trong dung dịch: X_A = n_A / Σn."],
+        ["11.13", 11, "So với nước nguyên chất, dung dịch đường saccharose 1M ở 1 atm có:", ["Nhiệt độ sôi cao hơn và nhiệt độ đông đặc thấp hơn.", "Nhiệt độ sôi thấp hơn và nhiệt độ đông đặc cao hơn.", "Cả nhiệt độ sôi và đông đặc đều cao hơn.", "Cả nhiệt độ sôi và đông đặc đều thấp hơn."], 0, "Dung dịch chứa chất tan không bay hơi luôn có: T_s(dd) > T_s(dm) (tăng điểm sôi) và T_đ(dd) < T_đ(dm) (hạ điểm đông)."],
+        ["11.14", 11, "Hòa tan 34,2 g saccharose (C₁₂H₂₂O₁₁, M = 342 g/mol) vào 500 g H₂O. Tính nhiệt độ sôi của dung dịch (K_s(H₂O) = 0,52 °C/m):", ["100,104°C", "100,52°C", "99,896°C", "101,04°C"], 0, "n = 34,2 / 342 = 0,1 mol. m = 0,1 / 0,5 = 0,2 m. ΔT_s = 0,52 × 0,2 = 0,104°C. T_s = 100 + 0,104 = 100,104°C."],
+        ["11.15", 11, "Áp suất hơi bão hòa của nước nguyên chất ở 25°C là 23,76 mmHg. Tính áp suất hơi bão hòa của dung dịch chứa 0,1 mol chất tan không bay hơi trong 0,9 mol nước:", ["21,38 mmHg", "23,76 mmHg", "2,38 mmHg", "25,00 mmHg"], 0, "X_H₂O = 0,9 / (0,1 + 0,9) = 0,9. Theo Raoult I: P = P⁰ · X_dm = 23,76 × 0,9 = 21,384 mmHg."],
+        ["11.16", 11, "Nồng độ đương lượng (N hay C_N) của dung dịch biểu diễn:", ["Số đương lượng gram chất tan trong 1 lít dung dịch.", "Số mol chất tan trong 1000 g dung môi.", "Số gram chất tan trong 100 g dung dịch.", "Số mol chất tan trong 1 lít dung dịch."], 0, "Định nghĩa: Nồng độ đương lượng C_N là số đương lượng gram (val) chất tan có trong 1 lít dung dịch."],
+        ["11.17", 11, "Trong phản ứng oxy hóa giảm: KMnO₄ + FeSO₄ + H₂SO₄ → MnSO₄ + Fe₂(SO₄)₃ + K₂SO₄ + H₂O. Đương lượng E của KMnO₄ (M = 158) bằng:", ["M / 5", "M / 3", "M / 1", "M / 2"], 0, "Trong môi trường acid, Mn⁺⁷ nhận 5e thành Mn⁺² ⇒ số electron trao đổi z = 5 ⇒ Đương lượng E = M / 5."],
+        ["11.18", 11, "Dung dịch nhược trương là dung dịch có áp suất thẩm thấu:", ["Nhỏ hơn áp suất thẩm thấu của dung dịch tế bào/chuẩn.", "Lớn hơn áp suất thẩm thấu của dung dịch tế bào/chuẩn.", "Bằng áp suất thẩm thấu của dung dịch tế bào/chuẩn.", "Bằng 0."], 0, "Dung dịch nhược trương có áp suất thẩm thấu bé hơn dung dịch so sánh (vd: tế bào máu), làm nước thẩm thấu vào tế bào."],
+        ["11.19", 11, "Khi cho hồng cầu vào dung dịch ưu trương (như NaCl 3%), hiện tượng gì sẽ xảy ra?", ["Hồng cầu bị mất nước và teo lại.", "Hồng cầu hút nước và bị vỡ (huyết tán).", "Hồng cầu không thay đổi kích thước.", "Hồng cầu bị biến đổi màu sắc."], 0, "Trong dung dịch ưu trương (π_ngoài > π_trong), nước từ bên trong tế bào hồng cầu thẩm thấu ra ngoài làm tế bào bị teo lại."],
+        ["11.20", 11, "Một dung dịch lỏng lý tưởng là dung dịch mà trong đó:", ["Lực tương tác giữa các phân tử cùng loại và khác loại bằng nhau (A-A = B-B = A-B).", "Quá trình hòa tan không có hiệu ứng nhiệt (ΔH_ht = 0) và không thay đổi thể tích (ΔV_ht = 0).", "Tuân theo đúng định luật Raoult trong toàn bộ khoảng nồng độ.", "Tất cả các phương án trên đều đúng."], 3, "Dung dịch lý tưởng thỏa mãn tất cả điều kiện: lực tương tác đồng nhất, ΔH_ht = 0, ΔV_ht = 0 và tuân theo định luật Raoult."],
+        ["11.21", 11, "Độ giảm áp suất hơi tương đối của dung dịch loãng chất tan không bay hơi phụ thuộc vào:", ["Tỉ số giữa số phân tử chất tan và tổng số phân tử trong dung dịch.", "Bản chất của chất tan.", "Nhiệt độ sôi của dung dịch.", "Thể tích của bình chứa."], 0, "Theo Raoult I: (P⁰ - P)/P⁰ = X_ct = n_ct / (n_ct + n_dm), chỉ phụ thuộc vào số hạt (tỉ lệ phân mol) chất tan."],
+        ["11.22", 11, "Độ tan của chất khí trong chất lỏng sẽ tăng khi:", ["Tăng áp suất và giảm nhiệt độ.", "Giảm áp suất và tăng nhiệt độ.", "Tăng áp suất và tăng nhiệt độ.", "Giảm áp suất và giảm nhiệt độ."], 0, "Theo định luật Henry và nguyên lý chuyển dịch cân bằng: Khí hòa tan tăng khi tăng áp suất P (dồn khí vào lỏng) và giảm nhiệt độ T (quá trình hòa tan tỏa nhiệt)."],
+        ["11.23", 11, "Tính áp suất thẩm thấu của dung dịch glucose 0,05 M ở 37°C (310 K). (R = 0,082 L.atm/mol.K):", ["1,27 atm", "2,54 atm", "0,64 atm", "3,81 atm"], 0, "π = C_M · R · T = 0,05 × 0,082 × 310 ≈ 1,271 atm."],
+        ["11.24", 11, "Hệ số đẳng trương i của van't Hoff xuất hiện trong công thức tính tính chất sóng của dung dịch nhằm điều chỉnh cho:", ["Dung dịch điện ly (có sự phân ly ion làm tăng tổng số hạt).", "Dung dịch quá đậm đặc.", "Dung dịch khí trong lỏng.", "Dung dịch keo."], 0, "Hệ số i = 1 + α(n-1) dùng cho dung dịch điện ly để tính đến sự gia tăng số lượng hạt (ion) trong dung dịch."],
+        ["11.25", 11, "Pha 10 g NaCl vào 90 g H₂O. Nồng độ phần trăm C% của dung dịch là:", ["10%", "11,1%", "9%", "10 g/L"], 0, "C% = m_ct / m_dd × 100% = 10 / (10 + 90) × 100% = 10%."],
+        ["11.26", 11, "Trộn 200 ml dung dịch HCl 1M với 300 ml dung dịch HCl 2M. Nồng độ mol C_M của dung dịch thu được là:", ["1,6 M", "1,5 M", "1,4 M", "1,8 M"], 0, "n_tổng = 0,2×1 + 0,3×2 = 0,8 mol. V_tổng = 0,2 + 0,3 = 0,5 L. C_M = 0,8 / 0,5 = 1,6 M."],
+        ["11.27", 11, "Hiện tượng thẩm thấu là sự di chuyển tự phát của các phân tử:", ["Dung môi từ dung dịch loãng sang dung dịch đặc qua màng bán thấm.", "Chất tan từ dung dịch đặc sang dung dịch loãng.", "Dung môi từ dung dịch đặc sang dung dịch loãng.", "Chất tan qua màng bán thấm."], 0, "Định nghĩa thẩm thấu: phân tử dung môi tự di chuyển qua màng bán thấm từ nơi có nồng độ chất tan thấp (loãng) sang nơi có nồng độ chất tan cao (đặc)."],
+        ["11.28", 11, "Để bảo quản máu không bị vỡ hồng cầu khi tiêm truyền tĩnh mạch, người ta dùng dung dịch đẳng trương NaCl có nồng độ xấp xỉ:", ["0,9% (khối lượng/thể tích)", "9,0%", "0,1%", "5,0%"], 0, "Dung dịch nước muối sinh lý đẳng trương với huyết thanh người là NaCl 0,9% (w/v)."],
+        ["11.29", 11, "Hằng số nghiệm đông của nước K_đ = 1,86 °C.kg/mol. Nước biển chứa khoảng 3,5% NaCl (coi phân ly hoàn toàn i=2, M_NaCl = 58,5). Nước biển sẽ đông đặc ở nhiệt độ khoảng:", ["-2,23°C", "-1,11°C", "0°C", "-3,72°C"], 0, "m ≈ (35/58,5) / 0,965 ≈ 0,62 m. ΔT_đ = i · K_đ · m = 2 × 1,86 × 0,62 ≈ 2,3°C ⇒ T_đ ≈ -2,23°C."],
+        ["11.30", 11, "Nhiệt độ sôi của dung dịch phụ thuộc vào áp suất ngoài như thế nào?", ["Khi áp suất ngoài tăng thì nhiệt độ sôi của dung dịch tăng.", "Khi áp suất ngoài tăng thì nhiệt độ sôi giảm.", "Nhiệt độ sôi không phụ thuộc áp suất ngoài.", "Tùy thuộc bản chất chất tan."], 0, "Một chất lỏng sôi khi áp suất hơi bão hòa bằng áp suất ngoài. Do đó khi tăng áp suất ngoài thì nhiệt độ sôi tăng lên."],
+        ["11.31", 11, "Cho dung dịch chứa 0,01 mol Ca(NO₃)₂ trong 1 kg H₂O. Coi Ca(NO₃)₂ phân ly hoàn toàn thành 3 ion. ΔT_đ của dung dịch là (K_đ = 1,86):", ["0,0558°C", "0,0186°C", "0,0372°C", "0,1860°C"], 0, "i = 3. m = 0,01. ΔT_đ = i · K_đ · m = 3 × 1,86 × 0,01 = 0,0558°C."],
+        ["11.32", 11, "Chất nào sau đây khi hòa tan cùng số mol vào 1 lít nước sẽ làm hạ nhiệt độ đông đặc nhiều nhất (giả sử điện ly hoàn toàn)?", ["Al₂(SO₄)₃", "CaCl₂", "NaCl", "Glucose"], 0, "Al₂(SO₄)₃ phân ly tạo 5 ion (2Al³⁺ + 3SO₄²⁻) ⇒ i = 5 lớn nhất ⇒ ΔT_đ = i·K_đ·m lớn nhất."],
+        ["11.33", 11, "Khái niệm màng bán thấm trong sự thẩm thấu là màng:", ["Chỉ cho các phân tử dung môi đi qua, không cho các phân tử chất tan đi qua.", "Chỉ cho chất tan đi qua.", "Cho tất cả các chất đi qua.", "Không cho bất kỳ chất nào đi qua."], 0, "Màng bán thấm có các lỗ xốp siêu nhỏ chỉ cho phép phân tử dung môi nhỏ đi qua và giữ lại các phân tử/ion chất tan lớn."],
+
+        // ==================== CHƯƠNG XII: DUNG DỊCH ĐIỆN LY (18 CÂU) ====================
+        ["12.1", 12, "Chọn nhận xét chính xác. Ở cùng các điều kiện, dung dịch điện ly so với dung dịch không điện ly có cùng nồng độ molal sẽ có:", ["Độ hạ điểm đông lớn hơn, độ tăng điểm sôi lớn hơn, áp suất thẩm thấu lớn hơn.", "Độ hạ điểm đông nhỏ hơn, độ tăng điểm sôi nhỏ hơn.", "Nhiệt độ sôi thấp hơn.", "Áp suất hơi bão hòa cao hơn."], 0, "Do sự phân ly thành ion làm tổng số hạt trong dung dịch điện ly lớn hơn (i > 1), nên ΔT_đ, ΔT_s và π đều lớn hơn dung dịch không điện ly cùng nồng độ."],
+        ["12.2", 12, "Hệ số van't Hoff i liên hệ với độ điện ly α và số ion n do 1 phân tử phân ly ra bằng công thức:", ["i = 1 + α(n - 1)", "i = 1 + n(α - 1)", "i = α(n + 1)", "i = 1 - α(n - 1)"], 0, "Từ cân bằng phân ly: 1 phân tử phân ly tạo n ion với độ điện ly α ⇒ Tổng số hạt = (1 - α) + nα = 1 + α(n - 1) = i."],
+        ["12.3", 12, "Tính độ điện ly α của dung dịch CH₃COOH 0,1M có pH = 2,87 (biết [H⁺] = 1,35×10⁻³ M):", ["1,35%", "0,135%", "13,5%", "2,87%"], 0, "CH₃COOH ⇌ H⁺ + CH₃COO⁻. [H⁺] = α · C₀ ⇒ α = [H⁺] / C₀ = 1,35×10⁻³ / 0,1 = 0,0135 = 1,35%."],
+        ["12.4", 12, "Biểu thức tích số tan K_sp của muối ít tan AₘBₙ ⇌ mAⁿ⁺ + nBᵐ⁻ là:", ["K_sp = [Aⁿ⁺]ᵐ · [Bᵐ⁻]ⁿ", "K_sp = [Aⁿ⁺] · [Bᵐ⁻]", "K_sp = m[Aⁿ⁺] + n[Bᵐ⁻]", "K_sp = [AₘBₙ] / ([A]ᵐ[B]ⁿ)"], 0, "Theo định luật tác dụng khối lượng cho cân bằng dị thể hợp chất ít tan: K_sp = [Aⁿ⁺]ᵐ · [Bᵐ⁻]ⁿ."],
+        ["12.5", 12, "Tính pH của dung dịch HCl 0,001 M (điện ly hoàn toàn):", ["3,0", "1,0", "2,0", "11,0"], 0, "HCl → H⁺ + Cl⁻ ⇒ [H⁺] = 0,001 M = 10⁻³ M ⇒ pH = -lg(10⁻³) = 3,0."],
+        ["12.6", 12, "Tính pH của dung dịch NaOH 0,01 M ở 25°C (điện ly hoàn toàn):", ["12,0", "2,0", "10,0", "7,0"], 0, "NaOH → Na⁺ + OH⁻ ⇒ [OH⁻] = 0,01 M = 10⁻² M ⇒ pOH = 2 ⇒ pH = 14 - pOH = 12,0."],
+        ["12.7", 12, "Thêm 1 ít muối CH₃COONa vào dung dịch acid yếu CH₃COOH thì độ điện ly α của CH₃COOH sẽ:", ["Giảm xuống do hiệu ứng ion chung.", "Tăng lên.", "Không đổi.", "Bằng 1."], 0, "CH₃COONa phân ly hoàn toàn tạo ion CH₃COO⁻. Nồng độ CH₃COO⁻ tăng làm cân bằng CH₃COOH ⇌ H⁺ + CH₃COO⁻ chuyển dịch sang trái ⇒ Độ điện ly α giảm."],
+        ["12.8", 12, "Dung dịch đệm là dung dịch có khả năng:", ["Giữ cho pH của dung dịch hầu như không đổi khi thêm một lượng nhỏ acid/base mạnh hoặc khi pha loãng.", "Biến đổi pH đột ngột khi thêm acid.", "Luôn có pH = 7.", "Không dẫn điện."], 0, "Định nghĩa dung dịch đệm: là dung dịch duy trì giá trị pH ổn định khi thêm một lượng nhỏ acid/base mạnh hoặc khi pha loãng."],
+        ["12.9", 12, "Dung dịch đệm acid thường gồm hỗn hợp của:", ["Một acid yếu và muối của acid yếu đó với base mạnh (VD: CH₃COOH + CH₃COONa).", "Một acid mạnh và base mạnh.", "Hai acid yếu.", "Muối trung tính và nước."], 0, "Thành phần hệ đệm acid gồm acid yếu HA và base liên hợp A⁻ (muối của acid yếu với base mạnh)."],
+        ["12.10", 12, "Tích số tan K_sp của AgCl ở 25°C là 1,8×10⁻¹⁰. Độ tan S (mol/L) của AgCl trong nước nguyên chất là:", ["1,34×10⁻⁵ M", "1,8×10⁻¹⁰ M", "3,24×10⁻²⁰ M", "1,34×10⁻³ M"], 0, "AgCl(r) ⇌ Ag⁺ + Cl⁻ ⇒ K_sp = S² ⇒ S = √(1,8×10⁻¹⁰) ≈ 1,34×10⁻⁵ mol/L."],
+        ["12.11", 12, "Điều kiện để xuất hiện kết tủa của muối ít tan AₘBₙ từ dung dịch là tích số nồng độ ion T phải:", ["T > K_sp", "T < K_sp", "T = K_sp", "T = 0"], 0, "Khi tích nồng độ ion với số mũ tương ứng T vượt quá tích số tan K_sp (T > K_sp), dung dịch trở nên quá bão hòa và kết tủa sẽ tách ra."],
+        ["12.12", 12, "Theo thuyết Brønsted - Lowry, acid là chất:", ["Có khả năng cho proton H⁺.", "Có khả năng nhận proton H⁺.", "Phân ly ra ion OH⁻ trong nước.", "Tạo cặp electron liên kết."], 0, "Định nghĩa Brønsted: Acid là chất cho H⁺ (proton donor), Base là chất nhận H⁺ (proton acceptor)."],
+        ["12.13", 12, "Cặp acid - base liên hợp là hai chất khác nhau một:", ["Proton H⁺", "Electron", "Ion OH⁻", "Phân tử nước"], 0, "Acid ⇌ Base liên hợp + H⁺. Cặp acid/base liên hợp chỉ khác nhau đúng 1 proton H⁺."],
+        ["12.14", 12, "Cho hằng số phân ly acid K_a của CH₃COOH là 1,8×10⁻⁵. Tính pH của dung dịch CH₃COOH 0,1 M:", ["2,87", "1,00", "4,75", "5,00"], 0, "[H⁺] = √(K_a · C₀) = √(1,8×10⁻⁵ × 0,1) = √(1,8×10⁻⁶) ≈ 1,342×10⁻³ M ⇒ pH = -lg(1,342×10⁻³) ≈ 2,87."],
+        ["12.15", 12, "Phương trình Henderson - Hasselbalch dùng tính pH của dung dịch đệm acid HA/A⁻ là:", ["pH = pK_a + lg([A⁻] / [HA])", "pH = pK_a - lg([A⁻] / [HA])", "pH = pK_a + ln([HA] / [A⁻])", "pH = 14 - pK_a"], 0, "Phương trình Henderson-Hasselbalch: pH = pK_a + lg(C_muối / C_acid) = pK_a + lg([A⁻]/[HA])."],
+        ["12.16", 12, "Độ điện ly α của chất điện ly yếu tăng lên khi:", ["Pha loãng dung dịch (giảm nồng độ C).", "Tăng nồng độ chất tan.", "Thêm ion chung.", "Hạ nhiệt độ dung dịch."], 0, "Định luật pha loãng Ostwald: K_a = α²C / (1-α) ≈ α²C ⇒ α = √(K_a / C). Khi pha loãng (C giảm) thì độ điện ly α tăng."],
+        ["12.17", 12, "Trộn 100 ml dung dịch BaCl₂ 0,02 M với 100 ml dung dịch Na₂SO₄ 0,02 M. Cho K_sp(BaSO₄) = 1,1×10⁻¹⁰. Có kết tủa BaSO₄ xuất hiện không?", ["Có kết tủa vì tích nồng độ ion T = 10⁻⁴ > K_sp.", "Không có kết tủa.", "Dung dịch đạt cân bằng bão hòa.", "Không xác định được."], 0, "Sau khi trộn, V_tổng = 200 ml ⇒ [Ba²⁺] = 0,01 M; [SO₄²⁻] = 0,01 M. Tích nồng độ ion T = [Ba²⁺][SO₄²⁻] = 10⁻² × 10⁻² = 10⁻⁴. Vì 10⁻⁴ >> 1,1×10⁻¹⁰ (K_sp) nên kết tủa BaSO₄ xuất hiện ngay."],
+        ["12.18", 12, "Trong các dung dịch muối sau, dung dịch muối nào có pH > 7 do hiện tượng thủy phân?", ["CH₃COONa", "NaCl", "NH₄Cl", "KNO₃"], 0, "CH₃COONa là muối của acid yếu CH₃COOH và base mạnh NaOH. Ion CH₃COO⁻ bị thủy phân: CH₃COO⁻ + H₂O ⇌ CH₃COOH + OH⁻ làm tăng [OH⁻] ⇒ pH > 7 (môi trường kiềm)."]
+    ];
+
+    // APPLICATION STATE MANAGEMENT
+    let state = {
+        mode: 'PRACTICE', // 'PRACTICE' or 'EXAM'
+        activeList: [],    // Array of question indices currently in use
+        currentIndex: 0,   // Index within activeList
+        userAnswers: {},   // { questionId: selectedOptionIndex }
+        flagged: new Set(JSON.parse(localStorage.getItem('chem_flagged') || '[]')),
+        wrongQuestions: new Set(JSON.parse(localStorage.getItem('chem_wrong') || '[]')),
+        correctQuestions: new Set(JSON.parse(localStorage.getItem('chem_correct') || '[]')),
+        examSubmitted: false,
+        timerInterval: null,
+        timeSeconds: 0,
+        autoCheck: true,
+        filterCategory: 'ALL',
+        searchQuery: ''
+    };
+
+    // DOM ELEMENTS
+    const dom = {
+        paletteGrid: document.getElementById('palette-grid'),
+        questionNumTag: document.getElementById('question-num-tag'),
+        questionText: document.getElementById('question-text'),
+        diagramBox: document.getElementById('diagram-box'),
+        svgContent: document.getElementById('svg-content'),
+        optionsContainer: document.getElementById('options-container'),
+        explanationBox: document.getElementById('explanation-box'),
+        expHeader: document.getElementById('exp-header'),
+        expIcon: document.getElementById('exp-icon'),
+        expTitle: document.getElementById('exp-title'),
+        expContent: document.getElementById('exp-content'),
+        badgeChapter: document.getElementById('badge-chapter'),
+        badgeCode: document.getElementById('badge-question-code'),
+        statCompleted: document.getElementById('stat-completed'),
+        statCorrect: document.getElementById('stat-correct'),
+        statWrong: document.getElementById('stat-wrong'),
+        categoryFilter: document.getElementById('category-filter'),
+        searchInput: document.getElementById('search-input'),
+        btnPrev: document.getElementById('btn-prev'),
+        btnNext: document.getElementById('btn-next'),
+        btnCheckAns: document.getElementById('btn-check-ans'),
+        btnSubmitExam: document.getElementById('btn-submit-exam'),
+        btnToggleFlag: document.getElementById('btn-toggle-flag'),
+        flagIcon: document.getElementById('flag-icon'),
+        flagText: document.getElementById('flag-text'),
+        btnModePractice: document.getElementById('btn-mode-practice'),
+        btnModeExam: document.getElementById('btn-mode-exam'),
+        timerBox: document.getElementById('timer-box'),
+        timerText: document.getElementById('timer-text'),
+        autoCheckContainer: document.getElementById('auto-check-container'),
+        chkAutoCheck: document.getElementById('chk-auto-check'),
+        settingsModal: document.getElementById('settings-modal'),
+        btnOpenSettings: document.getElementById('btn-open-settings'),
+        btnCloseSettings: document.getElementById('close-settings-btn'),
+        btnApplySettings: document.getElementById('btn-apply-settings'),
+        btnResetProgress: document.getElementById('btn-reset-progress'),
+        chkShuffle: document.getElementById('chk-shuffle'),
+        resultModal: document.getElementById('result-modal'),
+        resScore: document.getElementById('res-score'),
+        resCorrect: document.getElementById('res-correct'),
+        resTime: document.getElementById('res-time'),
+        btnReviewExam: document.getElementById('btn-review-exam'),
+        btnRetryExam: document.getElementById('btn-retry-exam'),
+        sidebar: document.getElementById('palette-sidebar'),
+        mobileMenuBtn: document.getElementById('mobile-menu-btn'),
+        closeSidebarBtn: document.getElementById('close-sidebar-btn'),
+        sidebarBackdrop: document.getElementById('sidebar-backdrop')
+    };
+
+    // CHAPTER MAPPING HELPER
+    const CHAPTER_NAMES = {
+        6: "Chương VI: Nhiệt hóa học",
+        7: "Chương VII: Gibbs ΔG",
+        8: "Chương VIII: Cân bằng hóa học",
+        10: "Chương X: Động hóa học",
+        11: "Chương XI: Dung dịch lỏng",
+        12: "Chương XII: Dung dịch điện ly"
+    };
+
+    // INITIALIZATION
+    function initApp() {
+        buildActiveQuestionList();
+        renderPalette();
+        renderCurrentQuestion();
+        setupEventListeners();
+        updateStats();
+    }
+
+    // FILTER QUESTION LIST BASED ON USER SELECTION & SEARCH
+    function buildActiveQuestionList() {
+        state.activeList = [];
+        const cat = state.filterCategory;
+        const q = state.searchQuery.trim().toLowerCase();
+
+        QUESTIONS.forEach((qItem, globalIdx) => {
+            const [id, ch, text] = qItem;
+            let matchCat = false;
+
+            if (cat === 'ALL') matchCat = true;
+            else if (cat === 'CH6' && ch === 6) matchCat = true;
+            else if (cat === 'CH7' && ch === 7) matchCat = true;
+            else if (cat === 'CH8' && ch === 8) matchCat = true;
+            else if (cat === 'CH10' && ch === 10) matchCat = true;
+            else if (cat === 'CH11' && ch === 11) matchCat = true;
+            else if (cat === 'CH12' && ch === 12) matchCat = true;
+            else if (cat === 'WRONG' && state.wrongQuestions.has(id)) matchCat = true;
+            else if (cat === 'FLAGGED' && state.flagged.has(id)) matchCat = true;
+
+            let matchQuery = true;
+            if (q) {
+                matchQuery = id.toLowerCase().includes(q) || text.toLowerCase().includes(q);
+            }
+
+            if (matchCat && matchQuery) {
+                state.activeList.push(globalIdx);
+            }
+        });
+
+        if (state.activeList.length === 0) {
+            state.currentIndex = 0;
+        } else if (state.currentIndex >= state.activeList.length) {
+            state.currentIndex = 0;
+        }
+    }
+
+    // RENDER PALETTE BUTTONS IN SIDEBAR
+    function renderPalette() {
+        dom.paletteGrid.innerHTML = '';
+        if (state.activeList.length === 0) {
+            dom.paletteGrid.innerHTML = '<div class="col-span-5 py-8 text-center text-xs text-slate-400">Không tìm thấy câu hỏi phù hợp</div>';
+            return;
+        }
+
+        state.activeList.forEach((globalIdx, listIdx) => {
+            const qData = QUESTIONS[globalIdx];
+            const qId = qData[0];
+            const isCurrent = listIdx === state.currentIndex;
+            const userAns = state.userAnswers[qId];
+            const isFlagged = state.flagged.has(qId);
+            const isCorrect = state.correctQuestions.has(qId);
+            const isWrong = state.wrongQuestions.has(qId);
+
+            let btnClass = "bg-slate-100 text-slate-700 hover:bg-slate-200 border-slate-200";
+
+            if (state.mode === 'PRACTICE') {
+                if (isCorrect) {
+                    btnClass = "bg-emerald-500 text-white font-bold border-emerald-600 shadow-sm";
+                } else if (isWrong) {
+                    btnClass = "bg-rose-500 text-white font-bold border-rose-600 shadow-sm";
+                } else if (userAns !== undefined) {
+                    btnClass = "bg-chem-500 text-white font-bold border-chem-600";
+                }
+            } else { // EXAM mode
+                if (state.examSubmitted) {
+                    if (userAns === qData[4]) {
+                        btnClass = "bg-emerald-500 text-white font-bold";
+                    } else if (userAns !== undefined) {
+                        btnClass = "bg-rose-500 text-white font-bold";
+                    } else {
+                        btnClass = "bg-slate-300 text-slate-600";
+                    }
+                } else {
+                    if (userAns !== undefined) {
+                        btnClass = "bg-chem-500 text-white font-bold border-chem-600";
+                    }
+                }
+            }
+
+            if (isCurrent) {
+                btnClass += " ring-2 ring-slate-900 ring-offset-2 scale-105 z-10";
+            }
+
+            const btn = document.createElement('button');
+            btn.className = `h-9 rounded-xl text-xs font-semibold flex items-center justify-center relative transition-all border ${btnClass}`;
+            btn.innerHTML = `
+                <span>${qId}</span>
+                ${isFlagged ? '<span class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-amber-400 rounded-full border border-white"></span>' : ''}
+            `;
+            btn.addEventListener('click', () => {
+                state.currentIndex = listIdx;
+                renderCurrentQuestion();
+                renderPalette();
+                if (window.innerWidth < 1024) toggleSidebar(false);
+            });
+
+            dom.paletteGrid.appendChild(btn);
+        });
+    }
+
+    // RENDER CURRENT QUESTION DISPLAY
+    function renderCurrentQuestion() {
+        if (state.activeList.length === 0) {
+            dom.questionNumTag.textContent = "-";
+            dom.questionText.innerHTML = "Không có câu hỏi nào trong danh sách được chọn.";
+            dom.optionsContainer.innerHTML = "";
+            dom.explanationBox.classList.add("hidden");
+            dom.diagramBox.classList.add("hidden");
+            return;
+        }
+
+        const globalIdx = state.activeList[state.currentIndex];
+        const qData = QUESTIONS[globalIdx];
+        const [id, ch, text, opts, correctIdx, exp] = qData;
+
+        // Badges & Tag
+        dom.questionNumTag.textContent = `${state.currentIndex + 1}`;
+        dom.badgeChapter.textContent = CHAPTER_NAMES[ch] || `Chương ${ch}`;
+        dom.badgeCode.textContent = `Mã câu: ${id}`;
+
+        // Question text
+        dom.questionText.innerHTML = text;
+
+        // Render SVG for Q7.1
+        if (id === "7.1") {
+            dom.diagramBox.classList.remove("hidden");
+            dom.svgContent.innerHTML = `
+                <svg viewBox="0 0 320 200" class="w-full h-auto">
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284c7" />
+                        </marker>
+                    </defs>
+                    <!-- Axes -->
+                    <line x1="40" y1="170" x2="290" y2="170" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <line x1="40" y1="170" x2="40" y2="20" stroke="#64748b" stroke-width="2" marker-end="url(#arrow)"/>
+                    <text x="295" y="174" font-size="12" font-weight="bold" fill="#334155">V</text>
+                    <text x="36" y="14" font-size="12" font-weight="bold" fill="#334155">P</text>
+                    
+                    <!-- Point A and Point B -->
+                    <circle cx="70" cy="140" r="5" fill="#e11d48"/>
+                    <text x="55" y="155" font-size="11" font-weight="bold" fill="#e11d48">A (P₁,V₁)</text>
+                    
+                    <circle cx="250" cy="40" r="5" fill="#16a34a"/>
+                    <text x="255" y="35" font-size="11" font-weight="bold" fill="#16a34a">B (P₂,V₂)</text>
+
+                    <!-- Path 1: Straight diagonal -->
+                    <line x1="70" y1="140" x2="250" y2="40" stroke="#0284c7" stroke-width="2" stroke-dasharray="4"/>
+                    <text x="155" y="80" font-size="11" font-weight="bold" fill="#0284c7">1</text>
+
+                    <!-- Path 2: Upper curve -->
+                    <path d="M 70 140 Q 120 30 250 40" fill="none" stroke="#9333ea" stroke-width="2"/>
+                    <text x="130" y="45" font-size="11" font-weight="bold" fill="#9333ea">2</text>
+
+                    <!-- Path 3: Lower curve -->
+                    <path d="M 70 140 Q 200 150 250 40" fill="none" stroke="#ea580c" stroke-width="2"/>
+                    <text x="180" y="130" font-size="11" font-weight="bold" fill="#ea580c">3</text>
+
+                    <!-- Path 4: Isochoric up then isobaric right -->
+                    <path d="M 70 140 L 70 40 L 250 40" fill="none" stroke="#0891b2" stroke-width="2" stroke-dasharray="2,2"/>
+                    <text x="75" y="90" font-size="11" font-weight="bold" fill="#0891b2">4</text>
+
+                    <!-- Path 5: Isobaric right then isochoric up -->
+                    <path d="M 70 140 L 250 140 L 250 40" fill="none" stroke="#d97706" stroke-width="2" stroke-dasharray="2,2"/>
+                    <text x="235" y="145" font-size="11" font-weight="bold" fill="#d97706">5</text>
+                </svg>
+            `;
+        } else {
+            dom.diagramBox.classList.add("hidden");
+        }
+
+        // Render Options
+        const userAns = state.userAnswers[id];
+        const isChecked = (state.mode === 'PRACTICE' && (userAns !== undefined && (state.autoCheck || state.correctQuestions.has(id) || state.wrongQuestions.has(id)))) || (state.mode === 'EXAM' && state.examSubmitted);
+
+        dom.optionsContainer.innerHTML = '';
+        const labels = ['A', 'B', 'C', 'D'];
+
+        opts.forEach((optText, optIdx) => {
+            const card = document.createElement('button');
+            card.type = 'button';
+
+            let borderStyle = 'border-slate-200 hover:border-chem-300 hover:bg-slate-50';
+            let badgeStyle = 'bg-slate-100 text-slate-700 group-hover:bg-chem-100 group-hover:text-chem-700';
+
+            if (userAns === optIdx) {
+                borderStyle = 'border-chem-500 bg-chem-50/60 ring-1 ring-chem-500';
+                badgeStyle = 'bg-chem-500 text-white';
+            }
+
+            if (isChecked) {
+                if (optIdx === correctIdx) {
+                    borderStyle = 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500';
+                    badgeStyle = 'bg-emerald-600 text-white';
+                } else if (userAns === optIdx && userAns !== correctIdx) {
+                    borderStyle = 'border-rose-500 bg-rose-50 ring-2 ring-rose-500';
+                    badgeStyle = 'bg-rose-600 text-white';
+                }
+            }
+
+            card.className = `w-full text-left p-3.5 sm:p-4 rounded-2xl border transition-all flex items-start space-x-3 group ${borderStyle}`;
+            card.innerHTML = `
+                <span class="w-7 h-7 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 transition-colors ${badgeStyle}">
+                    ${labels[optIdx]}
+                </span>
+                <span class="text-sm text-slate-800 pt-0.5 leading-normal flex-1 font-normal">${optText}</span>
+                ${isChecked && optIdx === correctIdx ? '<i class="fa-solid fa-circle-check text-emerald-600 text-lg ml-2"></i>' : ''}
+                ${isChecked && userAns === optIdx && userAns !== correctIdx ? '<i class="fa-solid fa-circle-xmark text-rose-600 text-lg ml-2"></i>' : ''}
+            `;
+
+            if (!state.examSubmitted) {
+                card.addEventListener('click', () => selectAnswer(id, optIdx, correctIdx, exp));
+            }
+
+            dom.optionsContainer.appendChild(card);
+        });
+
+        // Flag State
+        const isFlagged = state.flagged.has(id);
+        dom.flagIcon.className = isFlagged ? 'fa-solid fa-bookmark text-amber-500' : 'fa-regular fa-bookmark text-slate-400';
+        dom.flagText.textContent = isFlagged ? 'Đã gắn cờ' : 'Gắn cờ';
+
+        // Explanation Box Visibility
+        if (isChecked) {
+            dom.explanationBox.classList.remove('hidden');
+            const isCorrect = (userAns === correctIdx);
+
+            if (isCorrect) {
+                dom.explanationBox.className = 'p-4 sm:p-5 rounded-2xl border bg-emerald-50/80 border-emerald-200 text-emerald-900';
+                dom.expHeader.className = 'flex items-center space-x-2 font-bold text-sm mb-2 text-emerald-700';
+                dom.expIcon.className = 'fa-solid fa-circle-check text-emerald-600';
+                dom.expTitle.textContent = 'Chính xác! Lời giải chi tiết:';
+            } else {
+                dom.explanationBox.className = 'p-4 sm:p-5 rounded-2xl border bg-slate-50 border-slate-200 text-slate-800';
+                dom.expHeader.className = 'flex items-center space-x-2 font-bold text-sm mb-2 text-rose-600';
+                dom.expIcon.className = 'fa-solid fa-circle-exclamation text-rose-500';
+                dom.expTitle.textContent = `Chưa đúng. Đáp án đúng là ${labels[correctIdx]}. Lời giải chi tiết:`;
+            }
+            dom.expContent.innerHTML = exp;
+        } else {
+            dom.explanationBox.classList.add('hidden');
+        }
+
+        // Navigation state buttons
+        dom.btnPrev.disabled = (state.currentIndex === 0);
+        dom.btnNext.disabled = (state.currentIndex === state.activeList.length - 1);
+        dom.btnPrev.style.opacity = (state.currentIndex === 0) ? '0.5' : '1';
+        dom.btnNext.style.opacity = (state.currentIndex === state.activeList.length - 1) ? '0.5' : '1';
+    }
+
+    // HANDLE ANSWER SELECTION
+    function selectAnswer(qId, optIdx, correctIdx, exp) {
+        state.userAnswers[qId] = optIdx;
+
+        if (state.mode === 'PRACTICE') {
+            if (optIdx === correctIdx) {
+                state.correctQuestions.add(qId);
+                state.wrongQuestions.delete(qId);
+            } else {
+                state.wrongQuestions.add(qId);
+                state.correctQuestions.delete(qId);
+            }
+            saveLocalStorage();
+        }
+
+        renderCurrentQuestion();
+        renderPalette();
+        updateStats();
+    }
+
+    // CHECK ANSWER MANUAL BUTTON
+    function checkCurrentAnswer() {
+        if (state.activeList.length === 0) return;
+        const globalIdx = state.activeList[state.currentIndex];
+        const [id, ch, text, opts, correctIdx, exp] = QUESTIONS[globalIdx];
+        const userAns = state.userAnswers[id];
+
+        if (userAns === undefined) {
+            showToast("Vui lòng chọn 1 đáp án trước khi kiểm tra!");
+            return;
+        }
+
+        if (userAns === correctIdx) {
+            state.correctQuestions.add(id);
+            state.wrongQuestions.delete(id);
+        } else {
+            state.wrongQuestions.add(id);
+            state.correctQuestions.delete(id);
+        }
+        saveLocalStorage();
+
+        renderCurrentQuestion();
+        renderPalette();
+        updateStats();
+    }
+
+    // TOGGLE FLAG FOR REVIEW
+    function toggleFlag() {
+        if (state.activeList.length === 0) return;
+        const globalIdx = state.activeList[state.currentIndex];
+        const qId = QUESTIONS[globalIdx][0];
+
+        if (state.flagged.has(qId)) {
+            state.flagged.delete(qId);
+            showToast(`Đã bỏ gắn cờ câu ${qId}`);
+        } else {
+            state.flagged.add(qId);
+            showToast(`Đã gắn cờ câu ${qId} để xem lại!`);
+        }
+        saveLocalStorage();
+        renderCurrentQuestion();
+        renderPalette();
+    }
+
+    // UPDATE STATS COUNTER
+    function updateStats() {
+        const total = QUESTIONS.length;
+        const answeredCount = Object.keys(state.userAnswers).length;
+        dom.statCompleted.textContent = `${answeredCount}/${total}`;
+
+        if (state.mode === 'PRACTICE') {
+            dom.statCorrect.textContent = `${state.correctQuestions.size}`;
+            dom.statWrong.textContent = `${state.wrongQuestions.size}`;
+        } else {
+            let correct = 0;
+            let wrong = 0;
+            Object.keys(state.userAnswers).forEach(qId => {
+                const qObj = QUESTIONS.find(item => item[0] === qId);
+                if (qObj) {
+                    if (state.userAnswers[qId] === qObj[4]) correct++;
+                    else wrong++;
+                }
+            });
+            dom.statCorrect.textContent = `${correct}`;
+            dom.statWrong.textContent = `${wrong}`;
+        }
+    }
+
+    // SWITCH MODE (PRACTICE vs EXAM)
+    function setMode(newMode) {
+        state.mode = newMode;
+        if (newMode === 'PRACTICE') {
+            dom.btnModePractice.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center space-x-1.5 bg-chem-500 text-white shadow";
+            dom.btnModeExam.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center space-x-1.5";
+            dom.timerBox.classList.add("hidden");
+            dom.autoCheckContainer.classList.remove("hidden");
+            dom.btnCheckAns.classList.remove("hidden");
+            dom.btnSubmitExam.classList.add("hidden");
+            stopTimer();
+        } else {
+            dom.btnModeExam.className = "px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center space-x-1.5 bg-rose-500 text-white shadow";
+            dom.btnModePractice.className = "px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all flex items-center space-x-1.5";
+            dom.timerBox.classList.remove("hidden");
+            dom.autoCheckContainer.classList.add("hidden");
+            dom.btnCheckAns.classList.add("hidden");
+            dom.btnSubmitExam.classList.remove("hidden");
+            startTimer();
+        }
+        renderCurrentQuestion();
+        renderPalette();
+    }
+
+    // TIMER FUNCTIONS
+    function startTimer() {
+        stopTimer();
+        state.timeSeconds = 0;
+        state.timerInterval = setInterval(() => {
+            state.timeSeconds++;
+            const hrs = String(Math.floor(state.timeSeconds / 3600)).padStart(2, '0');
+            const mins = String(Math.floor((state.timeSeconds % 3600) / 60)).padStart(2, '0');
+            const secs = String(state.timeSeconds % 60).padStart(2, '0');
+            dom.timerText.textContent = `${hrs}:${mins}:${secs}`;
+        }, 1000);
+    }
+
+    function stopTimer() {
+        if (state.timerInterval) {
+            clearInterval(state.timerInterval);
+            state.timerInterval = null;
+        }
+    }
+
+    // SUBMIT EXAM
+    function submitExam() {
+        stopTimer();
+        state.examSubmitted = true;
+
+        let correct = 0;
+        const total = state.activeList.length;
+
+        state.activeList.forEach(globalIdx => {
+            const qData = QUESTIONS[globalIdx];
+            const qId = qData[0];
+            const userAns = state.userAnswers[qId];
+            if (userAns === qData[4]) {
+                correct++;
+                state.correctQuestions.add(qId);
+            } else if (userAns !== undefined) {
+                state.wrongQuestions.add(qId);
+            }
+        });
+
+        const score = ((correct / total) * 10).toFixed(1);
+        const mins = Math.floor(state.timeSeconds / 60);
+        const secs = state.timeSeconds % 60;
+
+        dom.resScore.textContent = `${score} / 10`;
+        dom.resCorrect.textContent = `${correct} / ${total}`;
+        dom.resTime.textContent = `${mins}m ${secs}s`;
+
+        dom.resultModal.classList.remove('hidden');
+        renderCurrentQuestion();
+        renderPalette();
+        saveLocalStorage();
+    }
+
+    // LOCAL STORAGE PERSISTENCE
+    function saveLocalStorage() {
+        localStorage.setItem('chem_flagged', JSON.stringify(Array.from(state.flagged)));
+        localStorage.setItem('chem_wrong', JSON.stringify(Array.from(state.wrongQuestions)));
+        localStorage.setItem('chem_correct', JSON.stringify(Array.from(state.correctQuestions)));
+    }
+
+    // TOAST MESSAGES
+    function showToast(msg) {
+        const toast = document.createElement('div');
+        toast.className = 'fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl shadow-lg z-50 transition-all duration-300 opacity-0 transform translate-y-2 flex items-center space-x-2';
+        toast.innerHTML = `<i class="fa-solid fa-circle-info text-chem-400"></i><span>${msg}</span>`;
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('opacity-0', 'translate-y-2');
+        }, 10);
+        setTimeout(() => {
+            toast.classList.add('opacity-0', 'translate-y-2');
+            setTimeout(() => toast.remove(), 300);
+        }, 2500);
+    }
+
+    // SIDEBAR TOGGLE FOR MOBILE
+    function toggleSidebar(open) {
+        if (open) {
+            dom.sidebar.classList.remove('-translate-x-full');
+            dom.sidebarBackdrop.classList.remove('hidden');
+        } else {
+            dom.sidebar.classList.add('-translate-x-full');
+            dom.sidebarBackdrop.classList.add('hidden');
+        }
+    }
+
+    // EVENT LISTENERS SETUP
+    function setupEventListeners() {
+        // Navigation buttons
+        dom.btnPrev.addEventListener('click', () => {
+            if (state.currentIndex > 0) {
+                state.currentIndex--;
+                renderCurrentQuestion();
+                renderPalette();
+            }
+        });
+
+        dom.btnNext.addEventListener('click', () => {
+            if (state.currentIndex < state.activeList.length - 1) {
+                state.currentIndex++;
+                renderCurrentQuestion();
+                renderPalette();
+            }
+        });
+
+        // Check & Submit
+        dom.btnCheckAns.addEventListener('click', checkCurrentAnswer);
+        dom.btnSubmitExam.addEventListener('click', submitExam);
+        dom.btnToggleFlag.addEventListener('click', toggleFlag);
+
+        // Mode Switch
+        dom.btnModePractice.addEventListener('click', () => setMode('PRACTICE'));
+        dom.btnModeExam.addEventListener('click', () => setMode('EXAM'));
+
+        // Filters
+        dom.categoryFilter.addEventListener('change', (e) => {
+            state.filterCategory = e.target.value;
+            buildActiveQuestionList();
+            renderPalette();
+            renderCurrentQuestion();
+        });
+
+        dom.searchInput.addEventListener('input', (e) => {
+            state.searchQuery = e.target.value;
+            buildActiveQuestionList();
+            renderPalette();
+            renderCurrentQuestion();
+        });
+
+        dom.chkAutoCheck.addEventListener('change', (e) => {
+            state.autoCheck = e.target.checked;
+            renderCurrentQuestion();
+        });
+
+        // Settings Modal
+        dom.btnOpenSettings.addEventListener('click', () => dom.settingsModal.classList.remove('hidden'));
+        dom.btnCloseSettings.addEventListener('click', () => dom.settingsModal.classList.add('hidden'));
+
+        document.querySelectorAll('.btn-count-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.btn-count-opt').forEach(b => {
+                    b.className = "btn-count-opt px-3 py-2 rounded-xl border border-slate-200 font-semibold hover:border-chem-500 hover:bg-chem-50 transition";
+                });
+                btn.className = "btn-count-opt px-3 py-2 rounded-xl border border-slate-200 font-semibold bg-chem-500 text-white transition";
+                btn.dataset.selected = "true";
+            });
+        });
+
+        dom.btnApplySettings.addEventListener('click', () => {
+            const countBtn = document.querySelector('.btn-count-opt[data-selected="true"]') || document.querySelector('.btn-count-opt[data-count="184"]');
+            const count = parseInt(countBtn.dataset.count);
+            const shuffle = dom.chkShuffle.checked;
+
+            state.userAnswers = {};
+            state.examSubmitted = false;
+
+            buildActiveQuestionList();
+
+            if (shuffle) {
+                state.activeList.sort(() => Math.random() - 0.5);
+            }
+
+            if (count < state.activeList.length) {
+                state.activeList = state.activeList.slice(0, count);
+            }
+
+            state.currentIndex = 0;
+            dom.settingsModal.classList.add('hidden');
+            renderPalette();
+            renderCurrentQuestion();
+            showToast(`Đã tạo bộ đề thi gồm ${state.activeList.length} câu!`);
+        });
+
+        dom.btnResetProgress.addEventListener('click', () => {
+            if (confirm("Bạn có chắc chắn muốn xóa toàn bộ lịch sử làm bài và câu đã gắn cờ?")) {
+                localStorage.removeItem('chem_flagged');
+                localStorage.removeItem('chem_wrong');
+                localStorage.removeItem('chem_correct');
+                state.flagged.clear();
+                state.wrongQuestions.clear();
+                state.correctQuestions.clear();
+                state.userAnswers = {};
+                buildActiveQuestionList();
+                renderPalette();
+                renderCurrentQuestion();
+                updateStats();
+                dom.settingsModal.classList.add('hidden');
+                showToast("Đã xóa lịch sử làm bài!");
+            }
+        });
+
+        // Result Modal actions
+        dom.btnReviewExam.addEventListener('click', () => {
+            dom.resultModal.classList.add('hidden');
+            state.currentIndex = 0;
+            renderCurrentQuestion();
+        });
+
+        dom.btnRetryExam.addEventListener('click', () => {
+            dom.resultModal.classList.add('hidden');
+            state.userAnswers = {};
+            state.examSubmitted = false;
+            state.currentIndex = 0;
+            startTimer();
+            renderPalette();
+            renderCurrentQuestion();
+        });
+
+        // Sidebar mobile toggle
+        dom.mobileMenuBtn.addEventListener('click', () => toggleSidebar(true));
+        dom.closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
+        dom.sidebarBackdrop.addEventListener('click', () => toggleSidebar(false));
+
+        // KEYBOARD SHORTCUTS HANDLER
+        document.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+
+            if (state.activeList.length === 0) return;
+            const globalIdx = state.activeList[state.currentIndex];
+            const qData = QUESTIONS[globalIdx];
+            const qId = qData[0];
+            const correctIdx = qData[4];
+            const exp = qData[5];
+
+            const key = e.key.toUpperCase();
+
+            if (['A', '1'].includes(key)) selectAnswer(qId, 0, correctIdx, exp);
+            else if (['B', '2'].includes(key)) selectAnswer(qId, 1, correctIdx, exp);
+            else if (['C', '3'].includes(key)) selectAnswer(qId, 2, correctIdx, exp);
+            else if (['D', '4'].includes(key)) selectAnswer(qId, 3, correctIdx, exp);
+            else if (e.key === 'ArrowLeft') {
+                if (state.currentIndex > 0) {
+                    state.currentIndex--;
+                    renderCurrentQuestion();
+                    renderPalette();
+                }
+            } else if (e.key === 'ArrowRight') {
+                if (state.currentIndex < state.activeList.length - 1) {
+                    state.currentIndex++;
+                    renderCurrentQuestion();
+                    renderPalette();
+                }
+            } else if (e.key === 'Enter') {
+                if (state.mode === 'PRACTICE') checkCurrentAnswer();
+            } else if (key === 'F') {
+                toggleFlag();
+            }
+        });
+    }
+
+    // RUN ON LOAD
+    window.onload = function() {
+        initApp();
+    };
+    </script>
+</body>
+</html>
